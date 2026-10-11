@@ -14,7 +14,7 @@ aangeeft of je iets hebt gewijzigd en je bewerking onder dezelfde licentie deelt
 ## Code: MIT
 
 Alle code in `labs/`, `boek/`, `test_labs.py` en `build.py` valt onder de MIT-licentie.
-Uitzondering: de letters in `boek/fonts/` (IBM Plex) en `web/fonts/` (Nunito) vallen onder de SIL Open Font License, zie `boek/fonts/OFL.txt` en `web/fonts/OFL.txt`.
+Uitzondering: de letters vallen onder de SIL Open Font License: IBM Plex Mono in `boek/fonts/` (zie `boek/fonts/OFL.txt`) en Nunito in `boek/fonts/` en `web/fonts/` (zie `boek/fonts/OFL-Nunito.txt` en `web/fonts/OFL.txt`).
 
 ```text
 MIT License
