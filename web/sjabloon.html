@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$titel</title>
+<meta name="description" content="Nederlandstalige zelfstudiecursus digitale elektronica en CPU-ontwerp, van transistor tot eigen chip.">
+<script>
+/* thema vóór het tekenen, zodat er geen flits is; zelfde sleutel als js/opslag.js */
+try { var t = JSON.parse(localStorage.getItem("cpu-cursus-v1")).thema; if (t === "licht" || t === "donker") document.documentElement.dataset.thema = t; } catch (e) {}
+</script>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="${basis}css/site.css">
+<script type="module" src="${basis}js/app.js"></script>
+</head>
+<body data-basis="$basis" data-fase="$fase">
+<a class="sla-over" href="#inhoud">Ga naar de inhoud</a>
+<header class="kop">
+  <button id="menuknop" type="button" aria-expanded="false" aria-controls="zijbalk">Menu</button>
+  <a class="merk" href="${basis}"><span class="logo" aria-hidden="true"></span>CPU Design Cursus</a>
+  <div class="zoek">
+    <input id="zoekvak" type="search" placeholder="Zoeken…" aria-label="Zoeken in de cursus" autocomplete="off">
+    <ul id="zoekresultaten" hidden></ul>
+  </div>
+  <button id="themaknop" type="button">Thema</button>
+  <a href="${basis}#downloads">PDF</a>
+</header>
+<div class="rooster">
+<nav id="zijbalk" aria-label="Cursus">$zijbalk</nav>
+<main id="inhoud">
+$inhoud
+$onderaan
+</main>
+<aside class="toc" aria-label="Op deze pagina">$toc</aside>
+</div>
+<footer>Tekst: CC BY-SA 4.0 · code: MIT · versie $versie · <a href="https://github.com/DDecoene/cpu-design-cursus">bron op GitHub</a></footer>
+<script type="application/json" id="cursus">$cursus</script>
+</body>
+</html>

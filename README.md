@@ -31,7 +31,8 @@ De bijlagen bevatten een Verilog-spiekbrief, de instructiesets, een chiplijst, f
 | `labs/` | alle code, per fase en dan per week of project (zie `labs/README.md`); het boek neemt zijn listings hieruit over |
 | `boek/` | de opmaak van het boek: Typst-sjabloon, pandoc-filter, kleuring en letters |
 | `test_labs.py` | draait alle tests |
-| `build.py` | bouwt het boek |
+| `build.py` | bouwt het boek (en met `./build.py site` de webcursus) |
+| `web/` | de webcursus: pandoc-filter, sjabloon, opmaak en de JavaScript voor voortgang en zoeken |
 | `.devcontainer/` | een werkomgeving met alle tools (Codespaces of VS Code) |
 
 Het boek staat niet in de repo maar bij de [Releases](../../releases), in drie PDF's:
@@ -45,6 +46,19 @@ Het boek staat niet in de repo maar bij de [Releases](../../releases), in drie P
 Korte listings staan in de tekst. Een lange listing (meer dan 40 regels) staat in het codeboek; in de tekst staat op die plaats een verwijzing. De antwoorden op de oefeningen en de zelftests staan achteraan in het boek.
 
 Begin met het hoofdstuk Welkom: dat beschrijft de werkwijze en welke software en onderdelen je nodig hebt. Wil je liever zelf bouwen, zie hieronder.
+
+## De webcursus
+
+De cursus staat ook als website: <https://ddecoene.github.io/cpu-design-cursus/>. Elke week is een pagina, met zoeken, een zijbalk en een voortgangsbalk die je alleen in je eigen browser bewaart. De PDF's blijven bestaan als offline naslag en zijn vanaf de site te downloaden.
+
+De site wordt uit dezelfde bronbestanden gebouwd als het boek. Lokaal bouwen (alleen pandoc is nodig):
+
+```text
+./build.py site                          # schrijft build/site/
+python3 -m http.server -d build/site     # bekijk hem op http://localhost:8000
+python3 test_site.py                     # tests van de bouw en de linkcontrole
+node --test web/test/*.test.js           # tests van voortgang en zoeken
+```
 
 ## Werkomgeving in een container
 

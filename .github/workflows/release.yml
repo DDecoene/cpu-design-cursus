@@ -52,3 +52,49 @@ jobs:
           gh release create "${{ github.ref_name }}" pdf/*.pdf \
             --title "${{ github.ref_name }}" \
             --notes "Het boek, gebouwd uit de bronbestanden in deze tag. cpu-design-cursus.pdf is voor het scherm (alles in één bestand, klikbaar). Om af te drukken: cpu-design-cursus-print.pdf (recto-verso, met rugmarge) en cpu-design-cursus-codeboek-print.pdf (de lange listings, als tweede map)."
+
+  site:
+    # Bouwt de webcursus en test de site; de bouw faalt bij een kapotte interne link.
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # git describe heeft de tags nodig voor het versienummer in de voet
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Installeer pandoc
+        # dezelfde vaste versie als bij het boek
+        run: |
+          wget -q https://github.com/jgm/pandoc/releases/download/3.1.11.1/pandoc-3.1.11.1-1-amd64.deb
+          sudo apt-get install -y ./pandoc-3.1.11.1-1-amd64.deb
+      - name: Test de site (Python en JavaScript)
+        run: |
+          python3 test_site.py
+          node --test web/test/*.test.js
+      - name: Bouw de site
+        run: ./build.py site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site
+
+  publiceer:
+    # Alleen een push naar main publiceert; pull requests bouwen alleen.
+    needs: site
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false   # twee snelle pushes publiceren in de juiste volgorde
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
