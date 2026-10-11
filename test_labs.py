@@ -1,27 +1,41 @@
 #!/usr/bin/env python3
 """Draait alle labtests: assembleert .asm-, .fs- en .tta-bestanden, compileert en draait elke tb_*.v
-met Icarus Verilog en draait test_*.py. Controleert ook dat elke include="..." in src/*.md bestaat.
+met Icarus Verilog en draait test_*.py. Controleert ook dat elke include="..." in src/**/*.md bestaat.
 Een lab slaagt als er geen FAIL in de output staat en er minstens één PASS in voorkomt.
-Gebruik: ./test_labs.py            (alles)
-         ./test_labs.py 04 cpu     (alleen labs/week04 en labs/cpu)"""
+Gebruik: ./test_labs.py                      (alles)
+         ./test_labs.py 04 w8_cpu            (week_04 en w8_cpu)
+         ./test_labs.py 07_de_beeldcomputer  (alle labs van een fase)"""
 import re, sys, subprocess, pathlib, glob
 root = pathlib.Path(__file__).parent
 labs = root / "labs"
 
-# elke include="..." in src/*.md moet naar een bestaand bestand in labs/ wijzen
+# elke include="..." in src/**/*.md moet naar een bestaand bestand in labs/ wijzen
 inc = re.compile(r'include="([^"]+)"')
-for md in sorted(glob.glob(str(root / "src" / "*.md"))):
+for md in sorted(glob.glob(str(root / "src" / "**" / "*.md"), recursive=True)):
     for path in inc.findall(pathlib.Path(md).read_text()):
         if not (labs / path).is_file():
             print(f"ONTBREEKT labs/{path} (uit {pathlib.Path(md).name})"); sys.exit(1)
 
+def lab_mappen():
+    """(fasemap, labmap) voor elke labmap, in cursusvolgorde."""
+    for fase in sorted(p for p in labs.iterdir() if p.is_dir()):
+        for d in sorted(p for p in fase.iterdir() if p.is_dir() and p.name != "__pycache__"):
+            yield fase, d
+
 bad = 0
 only = sys.argv[1:]
-def selected(d):
-    return not only or d.name in only or d.name[4:] in only
+bekend = {n for fase, d in lab_mappen() for n in (fase.name, d.name)}
+bekend |= {d.name[5:] for fase, d in lab_mappen() if d.name.startswith("week_")}
+onbekend = [o for o in only if o not in bekend]
+if onbekend:
+    print(f"Onbekende selectie: {', '.join(onbekend)}. Kies een labmap, een fasemap of een weeknummer (04).")
+    sys.exit(1)
 
-for d in sorted(p for p in labs.iterdir() if p.is_dir()):
-    if not selected(d): continue
+def selected(fase, d):
+    return not only or any(o in (d.name, fase.name) or d.name == f"week_{o}" for o in only)
+
+for fase, d in lab_mappen():
+    if not selected(fase, d): continue
     if (d / "asm.py").exists():
         for a in sorted(d.glob("*.asm")):
             r = subprocess.run(["python3", "asm.py", a.name], capture_output=True, text=True, cwd=d)

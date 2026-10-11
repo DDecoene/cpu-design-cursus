@@ -11,3 +11,8 @@ dev/
 
 # de PDF's worden bij een release gebouwd en staan niet in de repo
 pdf/
+
+# hex-bestanden worden door test_labs.py uit .asm, .tta en .fs gebouwd
+labs/**/*.hex
+!labs/07_de_beeldcomputer/beeldcomputer/sd.hex
+!labs/02_geheugen_en_tijd/week_08/prog.hex
