@@ -8,7 +8,7 @@
 -- Wat het doet:
 --   * koppen worden Typst-koppen een niveau dieper (deel = 1, hoofdstuk = 2, paragraaf = 3);
 --     de hand-nummering "3. " verdwijnt, Typst nummert zelf (17.3)
---   * ```{.verilog include="cpu/alu.v"}``` wordt een listing uit labs/; korte listings blijven
+--   * ```{.verilog include="04_een_cpu/w8_cpu/alu.v"}``` wordt een listing uit labs/; korte listings blijven
 --     in de tekst, lange worden een verwijzingskaart en gaan naar het codeboek (<sleutel>-code.typ)
 --   * de paragraaf "Antwoorden" en de antwoorden van de zelftest gaan naar <sleutel>-antw.typ
 --   * citaatblokken worden kaders, "Wat je na deze week kunt" wordt een doelenkader

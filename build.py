@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bouwt het boek uit src/*.md en de code in labs/.
+"""Bouwt het boek uit src/<fase>/week_NN.md en de code in labs/.
 
   pdf/cpu-design-cursus.pdf                 voor het scherm: alles in één bestand, klikbaar
   pdf/cpu-design-cursus-print.pdf           om af te drukken (recto-verso, rugmarge): tekst en antwoorden
@@ -19,29 +19,25 @@ TYPST = os.environ.get("TYPST", "typst")
 PANDOC = os.environ.get("PANDOC", "pandoc")
 
 
-def ondertitel(tekst):
-    m = re.search(r'<p class="subtitle">(.*?)</p>', tekst)
-    return m.group(1) if m else ""
-
-
 def hoofdstukken():
-    """Leest de weken in: nummer, titel, fase."""
-    weken = {}
-    for md in sorted(src.glob("week*.md")):
+    """Leest de weken in: nummer, titel en fase (uit de mapnaam), plus het pad van elk hoofdstuk."""
+    weken, paden = {}, {}
+    for md in sorted(src.glob("*/week_*.md")):
         tekst = md.read_text()
-        nr = int(md.stem[4:])
+        nr = int(md.stem[5:])
         titel = re.search(r"^# Week \d+: (.*)$", tekst, re.M).group(1).strip()
-        fase = int(re.match(r"Fase (\d+)", ondertitel(tekst)).group(1))
-        weken[nr] = {"titel": titel, "fase": fase}
-    return weken
+        weken[nr] = {"titel": titel, "fase": int(md.parent.name[:2])}
+        paden[nr] = md
+    return weken, paden
 
 
 def fasen():
-    """Thema en resultaat per fase, uit de tabel in de syllabus."""
-    tekst = (src / "00_syllabus.md").read_text()
-    blok = tekst.split("## De zeven fasen", 1)[1]
-    rijen = re.findall(r"^\| (\d+) \| [^|]+ \| ([^|]+) \| ([^|]+) \|$", blok, re.M)
-    return {int(n): {"titel": t.strip(), "resultaat": r.strip()} for n, t, r in rijen}
+    """Thema en resultaat per fase, uit src/<fase>/fase.md (regels 'titel: ...' en 'resultaat: ...')."""
+    info = {}
+    for f in sorted(src.glob("*/fase.md")):
+        velden = dict(re.findall(r"^(\w+): (.*)$", f.read_text(), re.M))
+        info[int(f.parent.name[:2])] = {"titel": velden["titel"].strip(), "resultaat": velden["resultaat"].strip()}
+    return info
 
 
 def pandoc(md, **meta):
@@ -92,14 +88,14 @@ def main():
     uit.mkdir(parents=True, exist_ok=True)
     pdf.mkdir(exist_ok=True)
 
-    weken = hoofdstukken()
+    weken, paden = hoofdstukken()
     fase_info = fasen()
     (uit / "weken.json").write_text(json.dumps({"weken": {str(k): v for k, v in weken.items()}}, ensure_ascii=False))
 
-    pandoc(src / "00_syllabus.md", sleutel="00_syllabus", soort="voor")
-    pandoc(src / "99_bijlagen.md", sleutel="99_bijlagen", soort="bijlagen")
+    pandoc(src / "00_voorwerk" / "syllabus.md", sleutel="00_syllabus", soort="voor")
+    pandoc(src / "99_bijlagen" / "bijlagen.md", sleutel="99_bijlagen", soort="bijlagen")
     for nr, w in weken.items():
-        pandoc(src / f"week{nr:02d}.md", sleutel=f"week{nr:02d}", soort="week", nr=nr, fase=w["fase"])
+        pandoc(paden[nr], sleutel=f"week{nr:02d}", soort="week", nr=nr, fase=w["fase"])
 
     versie = subprocess.run(["git", "describe", "--tags", "--always", "--dirty"], cwd=root,
                             capture_output=True, text=True).stdout.strip() or "ontwikkelversie"
