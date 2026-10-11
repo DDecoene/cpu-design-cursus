@@ -172,18 +172,18 @@ Vraag voor je logboek: wat gebeurt er als je de LED zonder weerstand aansluit? P
 
 ## 9. Lab B: werkt je Verilog-toolchain?
 
-We schrijven nu alvast een piepklein Verilog-programma. Je hoeft het nog niet te snappen, we willen alleen weten of alles werkt. Maak een map `labs/week01/` en sla deze twee bestanden op.
+We schrijven nu alvast een piepklein Verilog-programma. Je hoeft het nog niet te snappen, we willen alleen weten of alles werkt. Maak een map `labs/01_elektronica_en_logica/week_01/` en sla deze twee bestanden op.
 
-```{.verilog include="week01/inverter.v"}
+```{.verilog include="01_elektronica_en_logica/week_01/inverter.v"}
 ```
 
-```{.verilog include="week01/tb_inverter.v"}
+```{.verilog include="01_elektronica_en_logica/week_01/tb_inverter.v"}
 ```
 
 Draai in de Terminal:
 
 ```text
-cd labs/week01
+cd labs/01_elektronica_en_logica/week_01
 iverilog -g2012 -o inv.vvp tb_inverter.v inverter.v
 vvp inv.vvp
 ```

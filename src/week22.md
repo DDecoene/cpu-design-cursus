@@ -137,7 +137,7 @@ De uitbreiding bestaat uit vier delen:
 3. een apparatenblok (`mmio.v`) met RAM, UART, timer en GPIO
 4. een nieuwe top die ze verbindt
 
-De ALU, de decoder en de geheugens blijven hetzelfde. Kopieer ze naar `labs/cpu_irq/`.
+De ALU, de decoder en de geheugens blijven hetzelfde. Kopieer ze naar `labs/05_andere_architecturen/w8_interrupts_en_io/`.
 
 
 De nieuwe instructies zitten al sinds week 17 in `asm.py`: `RETI` (opcode `B`), `EI` (`C`) en `DI` (`D`).
@@ -146,14 +146,14 @@ De nieuwe instructies zitten al sinds week 17 in `asm.py`: `RETI` (opcode `B`), 
 
 Vergelijk dit met `datapath.v` van week 14. Nieuw zijn `epc`, `ie`, de schaduwvlaggen en de tak `int_enter`.
 
-```{.verilog include="cpu_irq/datapath_i.v"}
+```{.verilog include="05_andere_architecturen/w8_interrupts_en_io/datapath_i.v"}
 ```
 
 Let op de volgorde in het `always`-blok: bij `int_enter` gebeurt alleen het interruptwerk. De instructie die tegelijk uit het geheugen komt, wordt weggegooid (het IR krijgt een `NOP`), net als bij de flush in week 20.
 
 ### Besturing
 
-```{.verilog include="cpu_irq/control_i.v"}
+```{.verilog include="05_andere_architecturen/w8_interrupts_en_io/control_i.v"}
 ```
 
 Wat is er veranderd?
@@ -165,14 +165,14 @@ Wat is er veranderd?
 
 ### De apparaten
 
-```{.verilog include="cpu_irq/mmio.v"}
+```{.verilog include="05_andere_architecturen/w8_interrupts_en_io/mmio.v"}
 ```
 
 Dit stuk bevat de hele UART, de timer en de GPIO. Alles wat we wisten over registers, tellers, schuifregisters en synchronizers komt hier in één module samen.
 
 ### De CPU
 
-```{.verilog include="cpu_irq/cpu_i.v"}
+```{.verilog include="05_andere_architecturen/w8_interrupts_en_io/cpu_i.v"}
 ```
 
 ## 7. Programma's
@@ -181,33 +181,33 @@ Dit stuk bevat de hele UART, de timer en de GPIO. Alles wat we wisten over regis
 
 De hoofdlus telt 1 + 2 + ... + 200 (modulo 256 is dat 132). Intussen komt er elke 40 cycli een timer-interrupt die een teller in het geheugen ophoogt. Let op twee dingen. De routine bewaart R0 en gebruikt R6 als vrij register. En aan het eind verpest ze met opzet de vlaggen (`CMP R0, R0` zet Z). Zou de hardware de vlaggen niet herstellen, dan sprong de `BNE` in de hoofdlus soms niet en zou de uitkomst niet kloppen.
 
-```{.text include="cpu_irq/timer.asm"}
+```{.text include="05_andere_architecturen/w8_interrupts_en_io/timer.asm"}
 ```
 
 De referentie is dezelfde berekening zonder timer:
 
-```{.text include="cpu_irq/timer_uit.asm"}
+```{.text include="05_andere_architecturen/w8_interrupts_en_io/timer_uit.asm"}
 ```
 
 ### UART met polling
 
 De testbench sluit de zender aan op de ontvanger. Het programma verzendt "HI" en leest het terug.
 
-```{.text include="cpu_irq/uart.asm"}
+```{.text include="05_andere_architecturen/w8_interrupts_en_io/uart.asm"}
 ```
 
 ### UART met interrupt
 
 De ontvanger vraagt een interrupt aan als er een byte binnen is. De routine zet de byte in een buffer. De hoofdlus wacht tot er drie bytes zijn.
 
-```{.text include="cpu_irq/uart_irq.asm"}
+```{.text include="05_andere_architecturen/w8_interrupts_en_io/uart_irq.asm"}
 ```
 
 ### Een knipperlicht
 
 De hoofdlus doet niets (`B slaap`). Al het werk gebeurt in de interruptroutine: bit 0 van de GPIO-uitgang omdraaien.
 
-```{.text include="cpu_irq/blink.asm"}
+```{.text include="05_andere_architecturen/w8_interrupts_en_io/blink.asm"}
 ```
 
 ## 8. Verificatie
@@ -218,12 +218,12 @@ Drie scenario's tegelijk, elk op een eigen CPU:
 - B. UART-polling. De testbench bevat een onafhankelijke UART-ontvanger die de lijn afluistert en de frames decodeert. Beide kanten (de ontvanger van de CPU en die van de testbench) moeten "H" en "I" zien.
 - C. UART-interrupt. De testbench zendt drie bytes met onregelmatige tussenpozen en de CPU zet ze in een buffer.
 
-```{.verilog include="cpu_irq/tb_irq.v"}
+```{.verilog include="05_andere_architecturen/w8_interrupts_en_io/tb_irq.v"}
 ```
 
 En het knipperlicht:
 
-```{.verilog include="cpu_irq/tb_blink.v"}
+```{.verilog include="05_andere_architecturen/w8_interrupts_en_io/tb_blink.v"}
 ```
 
 ### De test testen

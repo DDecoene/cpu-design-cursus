@@ -58,7 +58,7 @@ Je hebt [Icarus Verilog](https://steveicarus.github.io/iverilog/) en Python 3 no
 
 ```text
 python3 test_labs.py            # alle tests (74)
-python3 test_labs.py 04 cpu     # alleen labs/week04 en labs/cpu
+python3 test_labs.py 04 cpu     # alleen labs/01_elektronica_en_logica/week_04 en labs/04_een_cpu/w8_cpu
 ```
 
 ## Het boek bouwen
@@ -77,7 +77,7 @@ Zo werkt het: `build.py` zet elk hoofdstuk uit `src/` met pandoc en `boek/filter
 Code staat nooit in de tekst zelf. Een hoofdstuk verwijst naar een bestand in `labs/`, en het boek neemt het over:
 
 ````text
-```{.verilog include="cpu/alu.v"}
+```{.verilog include="04_een_cpu/w8_cpu/alu.v"}
 ```
 ````
 

@@ -34,7 +34,7 @@ Bij `en = 1` gaat `d` de flipflop in. Anders loopt zijn eigen uitgang `q` terug 
 
 > **Een regel om aan te houden.** Zet de klok zelf nooit aan of uit met een poort (clock gating) om een register te laten vasthouden. Dat geeft glitches en timingproblemen. Gebruik altijd een enable-ingang. Moderne chips doen wel aan clock gating, maar met speciale, veilige cellen. Dat is iets voor later.
 
-```{.verilog include="week06/regs.v"}
+```{.verilog include="02_geheugen_en_tijd/week_06/regs.v"}
 ```
 
 `{W{1'b0}}` betekent W keer een 0, hoe breed het register ook is.
@@ -57,7 +57,7 @@ Een shiftregister schuift bij elke klokflank alle bits één plek op. Aan de ene
 
 Je kunt het op een paar manieren gebruiken. Van serieel naar parallel: je stuurt 8 bits over één draad en haalt ze parallel weer op (de 74HC595, handig voor 8 LED's met 3 pinnen). Van parallel naar serieel: je leest 8 schakelaars over één draad in (de 74HC165). Ook vermenigvuldigen en delen met 2 gaat zo: één plek opschuiven naar links is ×2, naar rechts ÷2. Dat komt terug in week 12. En bit-serial CPU's laten de hele ALU op één bit tegelijk werken.
 
-```{.verilog include="week06/shift.v"}
+```{.verilog include="02_geheugen_en_tijd/week_06/shift.v"}
 ```
 
 ## 3. De teller
@@ -68,7 +68,7 @@ Een teller is ook de programmateller (PC) van een CPU. Hij wijst naar de volgend
 
 Een paar handige uitbreidingen: load zet een vaste waarde in de teller (en dat is een sprong in het programma), enable laat hem alleen tellen als `en = 1`, en reset brengt hem terug naar 0.
 
-```{.verilog include="week06/counter.v"}
+```{.verilog include="02_geheugen_en_tijd/week_06/counter.v"}
 ```
 
 De volgorde in de `if` bepaalt de voorrang: load wint van en. In een CPU wil je dat ook zo, want een sprong gaat voor op doortellen.
@@ -85,7 +85,7 @@ In een CPU gebruik je altijd synchrone logica.
 
 Bit n van een teller wisselt met frequentie f_klok / 2^(n+1). Zo maak je van een snelle klok een trage, bijvoorbeeld voor een LED die zichtbaar knippert of voor een tik van 1 Hz.
 
-```{.verilog include="week06/lfsr.v"}
+```{.verilog include="02_geheugen_en_tijd/week_06/lfsr.v"}
 ```
 
 Een LFSR is een shiftregister met een XOR-terugkoppeling. Hij is heel klein en wordt gebruikt voor willekeurige getallen, CRC-controlesommen en het testen van chips.
@@ -128,23 +128,23 @@ Een signaal van buiten (een knop, een UART) is niet gesynchroniseerd met je klok
 
 De standaardoplossing is twee flipflops achter elkaar op dezelfde klok. De eerste mag metastabiel worden: hij heeft een hele klokperiode om te beslissen. De tweede ziet een stabiele waarde. Het is geen garantie, maar de kans op een fout wordt astronomisch klein.
 
-```{.verilog include="week06/sync.v"}
+```{.verilog include="02_geheugen_en_tijd/week_06/sync.v"}
 ```
 
 Elke CPU die iets van buiten inleest, heeft hier een van nodig.
 
 ## 6. Tests
 
-```{.verilog include="week06/tb_regs.v"}
+```{.verilog include="02_geheugen_en_tijd/week_06/tb_regs.v"}
 ```
 
-```{.verilog include="week06/tb_sync.v"}
+```{.verilog include="02_geheugen_en_tijd/week_06/tb_sync.v"}
 ```
 
 Draai ze:
 
 ```text
-cd labs/week06
+cd labs/02_geheugen_en_tijd/week_06
 iverilog -g2012 -o a.vvp tb_regs.v regs.v shift.v counter.v lfsr.v && vvp a.vvp
 iverilog -g2012 -o b.vvp tb_sync.v sync.v && vvp b.vvp
 ```

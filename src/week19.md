@@ -198,7 +198,7 @@ Waarom `PC2` en niet `PC`? Op het moment dat de eerste move van `CALL` loopt, wi
 
 Lees dit bestand en vergelijk het met het diagram in paragraaf 2: de bus is een grote `case` over het bronveld en de bestemming een `case` in het klokgestuurde blok.
 
-```{.verilog include="tta/tta.v"}
+```{.verilog include="05_andere_architecturen/t8_transport_triggered/tta.v"}
 ```
 
 Let op een paar dingen. Er is geen besturingseenheid: het decoderen van `src` en `dst` is alles. Alle toestand wordt in één klokflank bijgewerkt, en een move naar `PC` overschrijft de standaard `pc + 1`. Na `HALT` verandert er niets meer. Lege plaatsen in het ROM zijn zelf een `HALT`, zodat een verdwaalde sprong de machine laat stoppen.
@@ -207,80 +207,80 @@ Let op een paar dingen. Er is geen besturingseenheid: het decoderen van `src` en
 
 Een TTA-assembler is eenvoudiger dan die van W8. Elke regel is `bron -> bestemming`, met een optionele guard. De structuur is dezelfde (twee passen, symbolentabel). De macro's `JMP`, `CALL` en `RET` breiden zich uit tot één of twee moves.
 
-```{.python include="tta/tta_asm.py"}
+```{.python include="05_andere_architecturen/t8_transport_triggered/tta_asm.py"}
 ```
 
 En de test, die de velden bit voor bit controleert:
 
-```{.python include="tta/test_tta_asm.py"}
+```{.python include="05_andere_architecturen/t8_transport_triggered/test_tta_asm.py"}
 ```
 
 ## 7. Voorbeeldprogramma's
 
 ### Som van 1 tot 10
 
-```{.text include="tta/sum.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/sum.tta"}
 ```
 
 Het patroon is een aftellende lus. `#1 -> SUB` zet de Z-vlag, `RES -> R1` verandert de vlaggen niet, en `?NZ` kan dus nog de vlag van de aftrekking gebruiken.
 
 ### Fibonacci en vermenigvuldigen
 
-```{.text include="tta/fib.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/fib.tta"}
 ```
 
-```{.text include="tta/mul.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/mul.tta"}
 ```
 
 ### Subroutines
 
-```{.text include="tta/call.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/call.tta"}
 ```
 
 ### Datageheugen: `MAR` en `MEM`
 
 Het geheugen heeft een adresregister. Je zet het adres in `MAR` en leest of schrijft via `MEM`:
 
-```{.text include="tta/array.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/array.tta"}
 ```
 
 ### 16-bit optellen met ADC
 
 De carry blijft bewaard tot de volgende trigger, dus `ADC` kan hem gebruiken. Zo reken je met getallen van 16 bit op een 8-bit machine:
 
-```{.text include="tta/add16.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/add16.tta"}
 ```
 
 ### Guards en de ingangspoort
 
-```{.text include="tta/guards.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/guards.tta"}
 ```
 
-```{.text include="tta/io.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/io.tta"}
 ```
 
 ## 8. Verificatie
 
 ### Acht programma's tegelijk
 
-```{.verilog include="tta/tb_tta.v"}
+```{.verilog include="05_andere_architecturen/t8_transport_triggered/tb_tta.v"}
 ```
 
 ### Willekeurige programma's tegen een referentiemodel
 
 Net als bij W8 (week 16) doen we een willekeurige test. De testbench bevat een model dat de T8-specificatie uitvoert met gewone gehele getallen. De generator maakt 300 programma's van 40 tot 190 willekeurige moves, met willekeurige guards, alle bronnen en bestemmingen, en voorwaartse sprongen. Daarna vergelijken we registers, OP, RES, MAR, vlaggen, het hele datageheugen, de volledige uitvoerreeks en het aantal cycli.
 
-```{.verilog include="tta/tb_tta_random.v"}
+```{.verilog include="05_andere_architecturen/t8_transport_triggered/tb_tta_random.v"}
 ```
 
 Draai het en kijk of de test zijn werk doet: verander bij `ADC` de `cf` in `0` in `tta.v` en je ziet fouten verschijnen. Die opzettelijke bug wordt in de 300 programma's meteen gevonden.
 
 ## 9. Tools
 
-```{.verilog include="tta/tb_tta_run.v"}
+```{.verilog include="05_andere_architecturen/t8_transport_triggered/tb_tta_run.v"}
 ```
 
-```{.bash include="tta/run_tta.sh"}
+```{.bash include="05_andere_architecturen/t8_transport_triggered/run_tta.sh"}
 ```
 
 ```text
@@ -338,10 +338,10 @@ Het echte voordeel zit in parallellisme. Met één bus is T8 sequentieel, maar m
 
 De drie uitwerkingen (maximum, negatie en rechtsschuiven) staan in dit programma, en de testbench controleert ze:
 
-```{.text include="tta/answers.tta"}
+```{.text include="05_andere_architecturen/t8_transport_triggered/answers.tta"}
 ```
 
-```{.verilog include="tta/tb_tta_answers.v"}
+```{.verilog include="05_andere_architecturen/t8_transport_triggered/tb_tta_answers.v"}
 ```
 
 ## 14. Zelftest

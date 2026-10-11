@@ -49,7 +49,7 @@ module tb_video_out;
           fouten = fouten + 1; $display("FAIL: pixel (%0d,%0d) is %h, verwacht %h", x, y, mon.img[y*640 + x], verwacht);
         end
       end
-    mon.write_ppm("../../build/video_out.ppm");
+    mon.write_ppm("../../../build/video_out.ppm");
     if (fouten == 0) $display("PASS: het framebuffer verschijnt pixel voor pixel goed op het scherm, met twee ongelijke klokken");
     $finish;
   end

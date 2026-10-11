@@ -79,10 +79,10 @@ Bij `<=` worden eerst alle rechterkanten gelezen en daarna alle linkerkanten teg
 
 Probeer het zelf:
 
-```{.verilog include="week09/blocking.v"}
+```{.verilog include="03_verilog_en_alu/week_09/blocking.v"}
 ```
 
-```{.verilog include="week09/tb_blocking.v"}
+```{.verilog include="03_verilog_en_alu/week_09/tb_blocking.v"}
 ```
 
 > **Drie regels om te onthouden.**
@@ -117,21 +117,21 @@ module teller #(parameter W = 8) (...);   // W kan bij het gebruik worden gewijz
 
 Een `for`-lus in een `generate`-blok maakt meerdere exemplaren van hardware. Het is geen herhaling zoals in software. Zo bouw je een N-bit opteller uit N volledige optellers:
 
-```{.verilog include="week09/addn.v"}
+```{.verilog include="03_verilog_en_alu/week_09/addn.v"}
 ```
 
 ### `function`
 
 Een functie berekent combinatorisch een waarde:
 
-```{.verilog include="week09/funcs.v"}
+```{.verilog include="03_verilog_en_alu/week_09/funcs.v"}
 ```
 
 ### `case`, `casez` en voorrang
 
 `casez` behandelt `?` als "maakt niet uit". Daarmee schrijf je een prioriteitsschakeling: de eerste regel die past wint.
 
-```{.verilog include="week09/prio.v"}
+```{.verilog include="03_verilog_en_alu/week_09/prio.v"}
 ```
 
 ## 5. SystemVerilog: de verbeterde variant
@@ -146,7 +146,7 @@ SystemVerilog is de moderne opvolger van Verilog (2005 en later). Alles uit Veri
 
 Alle voorbeelden in de rest van de cursus werken met `iverilog -g2012`, dus je mag beide stijlen door elkaar gebruiken. Voor nieuw werk is de SystemVerilog-stijl aan te raden:
 
-```{.verilog include="week09/sv_style.v"}
+```{.verilog include="03_verilog_en_alu/week_09/sv_style.v"}
 ```
 
 ## 6. Veelgemaakte fouten
@@ -166,16 +166,16 @@ Over dat laatste punt: zet in elk bestand bovenaan `` `default_nettype none `` e
 
 ## 7. Lab: een testbench voor de bouwstenen
 
-```{.verilog include="week09/tb_bouwstenen.v"}
+```{.verilog include="03_verilog_en_alu/week_09/tb_bouwstenen.v"}
 ```
 
-```{.verilog include="week09/tb_sv.v"}
+```{.verilog include="03_verilog_en_alu/week_09/tb_sv.v"}
 ```
 
 Draai alles:
 
 ```text
-cd labs/week09
+cd labs/03_verilog_en_alu/week_09
 iverilog -g2012 -o a.vvp tb_blocking.v blocking.v && vvp a.vvp
 iverilog -g2012 -o b.vvp tb_bouwstenen.v addn.v funcs.v prio.v && vvp b.vvp
 iverilog -g2012 -o c.vvp tb_sv.v sv_style.v && vvp c.vvp

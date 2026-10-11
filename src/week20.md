@@ -115,21 +115,21 @@ Hetzelfde geldt voor de vlaggen (een `BNE` direct na een `ADDI` ziet de nieuwe Z
 
 ## 5. De implementatie
 
-Je hebt maar twee nieuwe bestanden nodig. Kopieer eerst de bestanden die niet veranderen (`alu.v`, `idecode.v`, `memories.v`, `datapath.v`, `asm_funcs.vh`, `asm.py`, de programma's en de oude `control.v` en `cpu.v` voor de vergelijking) naar de nieuwe map `labs/cpu_pipe/`.
+Je hebt maar twee nieuwe bestanden nodig. Kopieer eerst de bestanden die niet veranderen (`alu.v`, `idecode.v`, `memories.v`, `datapath.v`, `asm_funcs.vh`, `asm.py`, de programma's en de oude `control.v` en `cpu.v` voor de vergelijking) naar de nieuwe map `labs/05_andere_architecturen/w8_pipeline/`.
 
 
 ### De besturing: één trap in plaats van twee
 
 Vergelijk dit met `control.v` van week 15. De stapteller `t` is weg en het ophalen (`F_PC_INC | F_IR_WE`) staat bij elke instructie tegelijk met de uitvoering aan.
 
-```{.verilog include="cpu_pipe/control_p.v"}
+```{.verilog include="05_andere_architecturen/w8_pipeline/control_p.v"}
 ```
 
 ### Het toplevel met de flush
 
 Hier staat de enige echt nieuwe regel: `ir_in = pc_load ? NOP : imem_dout`. Laat de besturing een sprong doorgaan, dan wordt de instructie die tegelijk uit het geheugen komt vervangen door een `NOP`.
 
-```{.verilog include="cpu_pipe/cpu_p.v"}
+```{.verilog include="05_andere_architecturen/w8_pipeline/cpu_p.v"}
 ```
 
 Dat is alles. Het datapath is niet aangeraakt.
@@ -146,14 +146,14 @@ cycli = 1 (pipeline vullen) + aantal instructies + aantal genomen sprongen
 
 Elke genomen `Bcc`, `CALL` en `JR` kost één verloren cyclus. De test controleert deze formule voor alle 300 programma's exact. Dat is een sterke controle, want het betekent dat het gedrag van de flush precies begrepen is.
 
-```{.verilog include="cpu_pipe/tb_pipe_random.v"}
+```{.verilog include="05_andere_architecturen/w8_pipeline/tb_pipe_random.v"}
 ```
 
 ### De vergelijking op echte programma's
 
 Dezelfde zes programma's uit week 17 draaien op beide CPU's, tegelijk, met een controle dat het resultaat identiek is:
 
-```{.verilog include="cpu_pipe/tb_compare.v"}
+```{.verilog include="05_andere_architecturen/w8_pipeline/tb_compare.v"}
 ```
 
 De meting:

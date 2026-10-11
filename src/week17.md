@@ -63,7 +63,7 @@ Een sprong naar een label dat later in het programma staat, is lastig: op het mo
 
 Hieronder staat het hele programma, ongeveer 200 regels. Lees het van boven naar beneden. `assemble(source)` is de kern: pas 1 en pas 2. `parse_number`, `reg`, `imm8` en `mem_operand` zijn kleine hulpfuncties met nette foutmeldingen. `main` leest een bestand en schrijft `.hex` (instructies) en `.dat` (data).
 
-```{.python include="cpu/asm.py"}
+```{.python include="04_een_cpu/w8_cpu/asm.py"}
 ```
 
 Een paar dingen om op te letten. Het programma geeft fouten met een regelnummer (`AsmError`) en geen kale Python-fout. Dat maakt het verschil tussen een tool die je wilt gebruiken en een die je laat liggen. `MOV rd, rs` is geen echte instructie: de assembler maakt er `OR rd, rs, rs` van. Zo'n verkorting heet een pseudo-instructie. Negatieve getallen in `ADDI` worden met `& 0xFF` omgezet naar twee-complement. En ongebruikte plaatsen in het geheugen worden gevuld met `NOP` (0xA000).
@@ -72,13 +72,13 @@ Een paar dingen om op te letten. Het programma geeft fouten met een regelnummer 
 
 Een assembler die één bit verkeerd codeert, veroorzaakt mysterieuze bugs in elk programma. Test hem daarom grondig. De test bevat dezelfde woorden die je in week 13 met de hand hebt berekend, plus labels, `.equ`, `.data`, `.org` en alle foutmeldingen.
 
-```{.python include="cpu/test_asm.py"}
+```{.python include="04_een_cpu/w8_cpu/test_asm.py"}
 ```
 
 Draai:
 
 ```text
-cd labs/cpu
+cd labs/04_een_cpu/w8_cpu
 python3 test_asm.py
 ```
 
@@ -86,10 +86,10 @@ python3 test_asm.py
 
 We hebben twee hulpmiddelen: een Verilog-programma dat een `.hex`-bestand in de CPU laadt en het resultaat toont, en een script dat alles in één keer doet.
 
-```{.verilog include="cpu/tb_run.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_run.v"}
 ```
 
-```{.bash include="cpu/run.sh"}
+```{.bash include="04_een_cpu/w8_cpu/run.sh"}
 ```
 
 Gebruik:
@@ -106,42 +106,42 @@ Bestudeer elk programma. Ze laten patronen zien die je steeds weer tegenkomt.
 
 ### Som van 1 tot 10
 
-```{.text include="cpu/sum.asm"}
+```{.text include="04_een_cpu/w8_cpu/sum.asm"}
 ```
 
 Het patroon is een aftellende lus. `ADDI R2, -1` zet de Z-vlag als het nul wordt en `BNE` gebruikt die direct. Een aparte `CMP` is niet nodig.
 
 ### Euclides (ggd)
 
-```{.text include="cpu/gcd.asm"}
+```{.text include="04_een_cpu/w8_cpu/gcd.asm"}
 ```
 
 Het patroon is vergelijken en vertakken. Na één `CMP` kun je twee sprongen achter elkaar gebruiken, eerst `BEQ` en dan `BCC`. Beide kijken naar dezelfde vlaggen.
 
 ### Subroutines
 
-```{.text include="cpu/calls.asm"}
+```{.text include="04_een_cpu/w8_cpu/calls.asm"}
 ```
 
 Het patroon is het link register. `CALL` zet het terugkeeradres in R7 en `RET` springt erheen. Een subroutine die zelf een andere subroutine aanroept, moet R7 eerst bewaren (bijvoorbeeld in een ander register), anders raakt ze haar eigen terugweg kwijt.
 
 ### 16-bit vermenigvuldigen
 
-```{.text include="cpu/mul.asm"}
+```{.text include="04_een_cpu/w8_cpu/mul.asm"}
 ```
 
 Het patroon is meerdere bytes als één getal. De CPU is 8 bit, maar het product van 200 × 150 = 30 000 past niet in een byte. We gebruiken twee registers (R5:R4) en geven de carry door met `BCC` en `ADDI`. Het algoritme is hetzelfde shift-and-add als in week 12, nu in software.
 
 ### Sorteren
 
-```{.text include="cpu/sort.asm"}
+```{.text include="04_een_cpu/w8_cpu/sort.asm"}
 ```
 
 Het patroon is een wijzer met een offset. `ADD R4, R3, R2` berekent een adres en `LD R6, [R4+1]` leest het volgende element. De `.data`-regel zet de beginwaarden in het datageheugen.
 
 ### Priemgetallen
 
-```{.text include="cpu/primes.asm"}
+```{.text include="04_een_cpu/w8_cpu/primes.asm"}
 ```
 
 Het patroon is geneste lussen met een tabel in het geheugen. Dit is een eerste echt programma: de zeef van Eratosthenes vindt alle 25 priemgetallen onder 100.
@@ -150,7 +150,7 @@ Het patroon is geneste lussen met een tabel in het geheugen. Dit is een eerste e
 
 Zes CPU's tegelijk in één simulatie, elk met een eigen programma. Elk resultaat wordt gecontroleerd.
 
-```{.verilog include="cpu/tb_asm.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_asm.v"}
 ```
 
 ## 6. Tips voor assemblyprogrammeurs
@@ -192,22 +192,22 @@ Er zijn een paar valkuilen. Vlaggen worden overschreven: `ADD`, `ADDI`, `CMP` en
 
 De oplossingen voor 1 tot en met 5 staan hieronder. De testbench aan het eind controleert ze allemaal.
 
-```{.text include="cpu/popcount.asm"}
+```{.text include="04_een_cpu/w8_cpu/popcount.asm"}
 ```
 
-```{.text include="cpu/add16.asm"}
+```{.text include="04_een_cpu/w8_cpu/add16.asm"}
 ```
 
-```{.text include="cpu/strlen.asm"}
+```{.text include="04_een_cpu/w8_cpu/strlen.asm"}
 ```
 
-```{.text include="cpu/reverse.asm"}
+```{.text include="04_een_cpu/w8_cpu/reverse.asm"}
 ```
 
-```{.text include="cpu/memcpy.asm"}
+```{.text include="04_een_cpu/w8_cpu/memcpy.asm"}
 ```
 
-```{.verilog include="cpu/tb_answers.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_answers.v"}
 ```
 
 6. Voeg in de tweede ronde van `assemble` een tak `elif op in ("INC", "DEC"):` toe, met `need(1)` en een code gelijk aan `(2 << 12) | (reg(ops[0], n) << 9) | (1 if op == "INC" else 0xFF)`. Test het met `assert code("INC R1") == code("ADDI R1, 1")` en `assert code("DEC R1") == code("ADDI R1, -1")`.

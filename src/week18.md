@@ -138,7 +138,7 @@ Een getal tot 127 kost dus één byte en een groter getal twee (LIT8 plus de waa
 
 ### De implementatie
 
-```{.verilog include="stack/s8.v"}
+```{.verilog include="05_andere_architecturen/s8_stackmachine_forth/s8.v"}
 ```
 
 Let op een paar dingen. De twee stapels zijn arrays (`ds` en `rs`) met een wijzer (`sp` en `rsp`) die naar de volgende vrije plaats wijst. De top is `ds[sp-1]`. Bij elke klokcyclus voert S8 één stap uit. Instructies met een operandbyte nemen twee cycli, waarbij de tweede de byte op `code[pc]` leest.
@@ -149,14 +149,14 @@ Alle werking zit in één groot `case`. Dat maakt een stackmachine zo klein: er 
 
 De eerste testbench zet bytes met de hand in het geheugen (zonder compiler) en controleert elke opcode:
 
-```{.verilog include="stack/tb_s8_basic.v"}
+```{.verilog include="05_andere_architecturen/s8_stackmachine_forth/tb_s8_basic.v"}
 ```
 
 ## 4. Een Forth-compiler in Python
 
 Bytes met de hand typen wil je niet. De compiler hieronder leest Forth-tekst en schrijft een `.hex`-bestand. Hij werkt in één pas met terugpatchen. Bij `IF` weet hij het sprongdoel nog niet, dus schrijft hij een lege plek en vult die in bij `THEN`. Een stapel van open structuren (`ctrl`) houdt bij welke plekken nog open staan.
 
-```{.python include="stack/forth.py"}
+```{.python include="05_andere_architecturen/s8_stackmachine_forth/forth.py"}
 ```
 
 Zo worden de besturingsstructuren gecompileerd:
@@ -171,51 +171,51 @@ Alles wordt teruggebracht tot `JZ` en `JMP`, de enige twee sprongen van de machi
 
 Ook de compiler heeft een test, net als de assembler:
 
-```{.python include="stack/test_forth.py"}
+```{.python include="05_andere_architecturen/s8_stackmachine_forth/test_forth.py"}
 ```
 
 ## 5. Programma's
 
 ### Rekenen
 
-```{.text include="stack/arith.fs"}
+```{.text include="05_andere_architecturen/s8_stackmachine_forth/arith.fs"}
 ```
 
 ### Faculteit: een recursief woord
 
 S8 heeft geen vermenigvuldiging. We bouwen `mul` daarom zelf, met herhaald optellen en de terugkeerstapel als tijdelijke opslag. Daarna kan `fact` zichzelf aanroepen: de terugkeerstapel groeit bij elke aanroep met één adres.
 
-```{.text include="stack/fact.fs"}
+```{.text include="05_andere_architecturen/s8_stackmachine_forth/fact.fs"}
 ```
 
 ### Fibonacci en som
 
-```{.text include="stack/fib.fs"}
+```{.text include="05_andere_architecturen/s8_stackmachine_forth/fib.fs"}
 ```
 
-```{.text include="stack/sum.fs"}
+```{.text include="05_andere_architecturen/s8_stackmachine_forth/sum.fs"}
 ```
 
 ### Een variabele
 
 `VARIABLE teller` reserveert een plek in het datageheugen. Het woord `teller` zet het adres op de stapel, en met `@` en `!` lees en schrijf je.
 
-```{.text include="stack/counter.fs"}
+```{.text include="05_andere_architecturen/s8_stackmachine_forth/counter.fs"}
 ```
 
 ### Alles testen op de hardware
 
 Vijf stackmachines tegelijk, elk met een eigen programma:
 
-```{.verilog include="stack/tb_forth.v"}
+```{.verilog include="05_andere_architecturen/s8_stackmachine_forth/tb_forth.v"}
 ```
 
 En een script om een eigen programma in één keer te compileren en te draaien:
 
-```{.verilog include="stack/tb_s8_run.v"}
+```{.verilog include="05_andere_architecturen/s8_stackmachine_forth/tb_s8_run.v"}
 ```
 
-```{.bash include="stack/runfs.sh"}
+```{.bash include="05_andere_architecturen/s8_stackmachine_forth/runfs.sh"}
 ```
 
 ```text
@@ -279,10 +279,10 @@ Moderne snelle processors zijn registermachines, juist omdat parallellisme belan
 7. Een programmafout kan de stapel laten overlopen, waarbij je terugkeeradressen of gegevens overschrijft. Dat is een klassieke bron van onverklaarbare fouten. In hardware voeg je een vergelijker toe tussen de wijzer en de grens (een overflow- en underflowvlag) die de CPU laat stoppen.
 8. De aanpak: `DO` zet `limiet start` op de terugkeerstapel (`>R >R`), en `LOOP` verhoogt de teller, vergelijkt hem met de limiet en springt terug naar het begin. Je hebt ook `I ( -- teller )` nodig (dat is `R@`) en een extra sprong.
 
-```{.text include="stack/answers.fs"}
+```{.text include="05_andere_architecturen/s8_stackmachine_forth/answers.fs"}
 ```
 
-```{.verilog include="stack/tb_answers_fs.v"}
+```{.verilog include="05_andere_architecturen/s8_stackmachine_forth/tb_answers_fs.v"}
 ```
 
 ## 10. Zelftest

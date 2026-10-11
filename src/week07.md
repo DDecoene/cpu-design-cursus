@@ -74,7 +74,7 @@ Kijk goed naar de overgangen vanuit S3 en S4. Na `1010` zit je op `10` (S2), en 
 
 ### Stap 2: de Verilog in drie blokken
 
-```{.verilog include="week07/seqdet.v"}
+```{.verilog include="02_geheugen_en_tijd/week_07/seqdet.v"}
 ```
 
 Drie dingen om te onthouden. Het toestandsregister gebruikt `<=` en een klok, de twee combinatorische blokken gebruiken `=` en `always @*`. Geef `next` altijd een standaardwaarde vóór de `case` en zet een `default`-tak erbij, anders ontstaat een latch (geheugen dat je niet wilde) en waarschuwt je synthesistool je. En de ongebruikte toestanden (5, 6 en 7) moeten ergens naartoe gaan. Een stoorpuls kan de machine erin duwen, en dan moet hij zich herstellen.
@@ -83,17 +83,17 @@ Drie dingen om te onthouden. Het toestandsregister gebruikt `<=` en een klok, de
 
 Een goede testbench vergelijkt met een referentiemodel, een simpel en vanzelfsprekend correct stukje gedrag. Hier houden we gewoon de laatste vier bits bij en vergelijken we ze met `1011`. Daarna voeren we 500 willekeurige bits in.
 
-```{.verilog include="week07/tb_seqdet.v"}
+```{.verilog include="02_geheugen_en_tijd/week_07/tb_seqdet.v"}
 ```
 
 ## 4. Voorbeeld: een verkeerslicht
 
 Er zijn vier toestanden: Noord-Zuid groen, Noord-Zuid geel, Oost-West groen en Oost-West geel. De duur verschilt per toestand, dus we hebben een timer nodig. Het toestandsregister blijft zoals het was, maar de volgende toestand verschijnt pas als de timer afloopt.
 
-```{.verilog include="week07/traffic.v"}
+```{.verilog include="02_geheugen_en_tijd/week_07/traffic.v"}
 ```
 
-```{.verilog include="week07/tb_traffic.v"}
+```{.verilog include="02_geheugen_en_tijd/week_07/tb_traffic.v"}
 ```
 
 ## 5. Toestanden coderen

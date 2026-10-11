@@ -39,7 +39,7 @@ module tb_beeld_v;
           if (mon.img[y*640 + x] !== pal[x / 40] && fouten < 10) begin
             fouten = fouten + 1; $display("FAIL: pixel (%0d,%0d) is %h, verwacht %h", x, y, mon.img[y*640 + x], pal[x / 40]);
           end
-      mon.write_ppm("../../build/kleurbalken.ppm");
+      mon.write_ppm("../../../build/kleurbalken.ppm");
       if (fouten == 0) $display("PASS: de CPU tekent 16 kleurbalken en het scherm toont ze op de goede plek");
     end
   endtask

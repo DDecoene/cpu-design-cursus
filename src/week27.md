@@ -116,7 +116,7 @@ Alles wat de generator moet doen is tellen. Een teller `hc` telt pixels van 0 to
 
 De module krijgt de tabel als parameters, zodat je er later een andere modus mee kunt maken (oefening 4).
 
-```{.verilog include="beeld/vga_sync.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/vga_sync.v"}
 ```
 
 Twee dingen om op te letten. De tellers hebben 11 bit, omdat grotere modi dan 640 x 480 (zoals 800 x 600) meer dan 1023 tellen. En `x` en `y` zijn gewoon de tellerwaarden: buiten het zichtbare gebied zijn ze groter dan 639 en 479, en de modules die ze gebruiken moeten dat negeren door naar `active` te kijken.
@@ -129,14 +129,14 @@ Voordat er een framebuffer is, laten we de generator een beeld maken dat alleen 
 2. acht kleurbalken: staan de drie kleurkanalen niet verwisseld?
 3. een grijsverloop van 16 stappen: werkt de DAC over het hele bereik?
 
-```{.verilog include="beeld/vga_bars.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/vga_bars.v"}
 ```
 
 Het balknummer is `x / 80`, maar we delen niet. Een deling kost veel logica, en we hoeven het getal alleen te weten tot 7. In plaats daarvan tellen we hoeveel van de zeven grenzen (80, 160, ...) `x` al voorbij is. Dat zijn zeven vergelijkingen die samen de balk geven. Dit is een veelgebruikte truc in hardware: vervang een deling door vergelijkingen of door een teller.
 
 Tot slot de top, die de tellers en het testbeeld verbindt:
 
-```{.verilog include="beeld/vga_testbeeld.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/vga_testbeeld.v"}
 ```
 
 Let op de uitgangsregisters onderaan. Alle uitgangen worden samen één klok vertraagd. Dat doen we met twee redenen:
@@ -150,28 +150,28 @@ Dat tweede principe, alles wat bij elkaar hoort even lang vertragen, keert volge
 
 Een echte monitor heb je voor de simulatie niet nodig. We maken er zelf een: een stuk Verilog dat alleen voor de simulatie bedoeld is, en dat zich net zo gedraagt als een monitor. Het kijkt alleen naar de syncpulsen (zoals een echte monitor) en bepaalt daaruit waar de pixels liggen. Het beeld begint 144 pixels na het begin van de horizontale sync (96 sync + 48 back porch) en 35 lijnen na het begin van de verticale sync (2 + 33). Alle pixels komen in een geheugen, en een taak schrijft het hele beeld weg als PPM-bestand.
 
-```{.verilog include="beeld/vga_mon.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/vga_mon.v"}
 ```
 
 Er zijn twee tests. De eerste controleert de timing met losse tellers die de getallen uit de specificatie letterlijk gebruiken. Dat is een bewuste keuze: gebruik je de tellers uit het ontwerp zelf, dan controleer je het ontwerp met zichzelf en slaagt elke fout.
 
-```{.verilog include="beeld/tb_vga_sync.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/tb_vga_sync.v"}
 ```
 
 De tweede bekijkt het testbeeld met de virtuele monitor en vergelijkt elke pixel van het eerste volledige beeld met wat het volgens de beschrijving moet zijn:
 
-```{.verilog include="beeld/tb_vga_testbeeld.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/tb_vga_testbeeld.v"}
 ```
 
 Als de tests slagen, schrijft de laatste ook `build/testbeeld.ppm`. Een PPM is het eenvoudigste beeldformaat dat bestaat, maar de meeste programma's openen het niet. Dit kleine script zet het om naar PNG:
 
-```{.python include="beeld/ppm2png.py"}
+```{.python include="07_de_beeldcomputer/beeldcomputer/ppm2png.py"}
 ```
 
-```{.python include="beeld/test_ppm2png.py"}
+```{.python include="07_de_beeldcomputer/beeldcomputer/test_ppm2png.py"}
 ```
 
-Draai `python3 ppm2png.py ../../build/testbeeld.ppm testbeeld.png` in `labs/beeld` en open het resultaat: acht kleurbalken, daaronder drie keer het grijsverloop, en een witte rand (die je op een witte achtergrond niet ziet).
+Draai `python3 ppm2png.py ../../../build/testbeeld.ppm testbeeld.png` in `labs/07_de_beeldcomputer/beeldcomputer` en open het resultaat: acht kleurbalken, daaronder drie keer het grijsverloop, en een witte rand (die je op een witte achtergrond niet ziet).
 
 ### Zijn de tests wel streng genoeg?
 
@@ -204,11 +204,11 @@ Met vier bits maak je een gewogen netwerk: elke bit krijgt een weerstand die twe
 
 In de praktijk koop je een VGA-module die dit al doet. Er bestaan Pmod-modules met 4 bit per kleur voor FPGA-borden. Kijk in de handleiding van de module naar de volgorde van de pinnen en naar het aantal bits: 4 bit per kleur geeft de 4096 kleuren waar ons ontwerp van uitgaat, en een module met 1 of 2 bit past er ook op, met minder kleuren.
 
-> **Controleer de pinnen zelf.** Welke FPGA-pin bij welke Pmod-pin hoort, staat in het schema van je bord en in de handleiding van de module. In `labs/beeld_fpga` staat een voorbeeld-pinbestand met vraagtekens in plaats van nummers.
+> **Controleer de pinnen zelf.** Welke FPGA-pin bij welke Pmod-pin hoort, staat in het schema van je bord en in de handleiding van de module. In `labs/07_de_beeldcomputer/beeldcomputer_op_fpga` staat een voorbeeld-pinbestand met vraagtekens in plaats van nummers.
 
 ## 9. Lab
 
-1. Draai de tests van fase 7: `python3 test_labs.py beeld`. Dit draait ook de tests van de volgende weken, dus het duurt ongeveer een minuut. De regels met `PASS` van `tb_vga_sync`, `tb_vga_testbeeld` en `test_ppm2png` horen bij deze week.
+1. Draai de tests van fase 7: `python3 test_labs.py beeldcomputer`. Dit draait ook de tests van de volgende weken, dus het duurt ongeveer een minuut. De regels met `PASS` van `tb_vga_sync`, `tb_vga_testbeeld` en `test_ppm2png` horen bij deze week.
 2. Zet `testbeeld.ppm` om naar PNG en bekijk het. Zie je alle acht balken en de 16 grijstinten?
 3. Verander in `vga_bars.v` de rand: maak hem 2 pixels dik. Welke test faalt en wat moet je in de test aanpassen?
 4. Zet in `vga_sync` de polariteit om (`SYNC_NEG = 0`). Welke tests falen? Wat zou je van een echte monitor verwachten?

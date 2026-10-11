@@ -97,10 +97,10 @@ Een NAND heeft vier transistoren, een AND heeft er zes (een NAND plus een invert
 
 Verilog heeft ingebouwde primitieven `nmos` en `pmos`. We bouwen hiermee de NAND van hierboven na en testen alle vier de invoerparen:
 
-```{.verilog include="week02/nand_cmos.v"}
+```{.verilog include="01_elektronica_en_logica/week_02/nand_cmos.v"}
 ```
 
-```{.verilog include="week02/tb_nand_cmos.v"}
+```{.verilog include="01_elektronica_en_logica/week_02/tb_nand_cmos.v"}
 ```
 
 ## 4. De standaardpoorten
@@ -137,13 +137,13 @@ Met alleen NAND-poorten kun je elke logische functie bouwen. Dat laat je zien do
 
 Dit is niet alleen een denkoefening. De Apollo Guidance Computer (1966), die de maanlanding begeleidde, bestond bijna volledig uit NOR-poorten met drie ingangen. Wat je nu leert, is dus echt de basis.
 
-```{.verilog include="week02/nand2.v"}
+```{.verilog include="01_elektronica_en_logica/week_02/nand2.v"}
 ```
 
-```{.verilog include="week02/gates_from_nand.v"}
+```{.verilog include="01_elektronica_en_logica/week_02/gates_from_nand.v"}
 ```
 
-```{.verilog include="week02/tb_universal.v"}
+```{.verilog include="01_elektronica_en_logica/week_02/tb_universal.v"}
 ```
 
 ## 6. Echte chips: de 74HC-serie
@@ -202,10 +202,10 @@ Vragen voor je logboek: wat meet je met de multimeter op de uitgang als die hoog
 
 ## 8. Lab B: Verilog
 
-Sla de bestanden uit paragraaf 3 en 5 op in `labs/week02/` en draai:
+Sla de bestanden uit paragraaf 3 en 5 op in `labs/01_elektronica_en_logica/week_02/` en draai:
 
 ```text
-cd labs/week02
+cd labs/01_elektronica_en_logica/week_02
 iverilog -g2012 -o nand.vvp tb_nand_cmos.v nand_cmos.v
 vvp nand.vvp
 iverilog -g2012 -o uni.vvp tb_universal.v nand2.v gates_from_nand.v
@@ -234,10 +234,10 @@ Je moet twee keer PASS zien. Breek het ontwerp daarna met opzet: wissel in `nand
 6. Wil de ene uitgang hoog zijn (naar Vdd) en de andere laag (naar GND), dan ontstaat kortsluiting. Dat kan de chip beschadigen, en de spanning is bovendien niet gedefinieerd.
 7. Majority(A,B,C) = AB + BC + AC. Neem drie NAND's: t1 = NAND(a,b), t2 = NAND(b,c), t3 = NAND(a,c). Dan is Majority = NOT(t1 · t2 · t3) = NAND(AND(t1,t2), t3). Alles uit `nand2`:
 
-```{.verilog include="week02/majority.v"}
+```{.verilog include="01_elektronica_en_logica/week_02/majority.v"}
 ```
 
-```{.verilog include="week02/tb_majority.v"}
+```{.verilog include="01_elektronica_en_logica/week_02/tb_majority.v"}
 ```
 
 ## 11. Zelftest

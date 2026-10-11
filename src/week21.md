@@ -91,20 +91,20 @@ Waarom 2 bits? Neem een lus van 10 iteraties: negen keer genomen, één keer nie
 
 Eerst een instructieset-simulator voor W8, geschreven in Python, die ook een spoor bijhoudt van alle voorwaardelijke sprongen. Hij is gevalideerd tegen de Verilog-CPU: dezelfde eindresultaten en hetzelfde aantal instructies (2 cycli per instructie).
 
-```{.python include="memhier/w8iss.py"}
+```{.python include="05_andere_architecturen/w8_caches_en_voorspelling/w8iss.py"}
 ```
 
 Daarna de voorspellers en een functie die de nauwkeurigheid over een spoor meet:
 
-```{.python include="memhier/predict.py"}
+```{.python include="05_andere_architecturen/w8_caches_en_voorspelling/predict.py"}
 ```
 
 De test controleert eerst dat de ISS dezelfde uitkomsten geeft als de Verilog-CPU, en daarna het gedrag van de voorspellers op een synthetisch lusspoor:
 
-```{.python include="memhier/test_predict.py"}
+```{.python include="05_andere_architecturen/w8_caches_en_voorspelling/test_predict.py"}
 ```
 
-De bestanden `asm.py` en de zes `.asm`-programma's staan al in `labs/cpu/`. Kopieer ze naar `labs/memhier/`.
+De bestanden `asm.py` en de zes `.asm`-programma's staan al in `labs/04_een_cpu/w8_cpu/`. Kopieer ze naar `labs/05_andere_architecturen/w8_caches_en_voorspelling/`.
 
 
 ### De resultaten op echte programma's
@@ -196,7 +196,7 @@ En voor de CPI van een processor met veel geheugenacties:
 
 De cache zit tussen de CPU en een langzaam hoofdgeheugen (`slowmem`, met instelbare vertraging LAT). We bouwen de cache als toestandsmachine met drie toestanden: `IDLE`, `WAIT_R` (wachten op een regel uit het geheugen) en `WAIT_W` (wachten op een schrijfactie).
 
-```{.verilog include="memhier/cache.v"}
+```{.verilog include="05_andere_architecturen/w8_caches_en_voorspelling/cache.v"}
 ```
 
 ### Test: correct en meetbaar
@@ -212,7 +212,7 @@ De testbench doet twee dingen.
 | Adressen 0, 64, 128, 192 afwisselend, 100 keer | 400 missers, 0 hits | alle vier hebben dezelfde index, dus ze verdringen elkaar (conflictmissers) |
 | 16 bytes, 100 keer | 4 missers, 1596 hits | de werkset van 4 regels past ruim |
 
-```{.verilog include="memhier/tb_cache.v"}
+```{.verilog include="05_andere_architecturen/w8_caches_en_voorspelling/tb_cache.v"}
 ```
 
 Dat tweede patroon is leerzaam. De cache is 64 bytes groot en toch levert dit patroon van vier adressen geen enkele hit op. De vier adressen verschillen in de tagbits, maar hebben dezelfde index. Een set-associatieve cache met 2 wegen lost dit precies op.

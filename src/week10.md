@@ -84,10 +84,10 @@ In de praktijk combineer je ze: gerichte tests voor de bekende hoeken (0, 255, o
 
 Hier staan twee 8-bit optellers. Eén heeft een hoogst onwaarschijnlijke fout: als `a` tussen 0xF0 en 0xFF ligt en `b` precies 1 is, wordt er niet opgeteld.
 
-```{.verilog include="week10/adders.v"}
+```{.verilog include="03_verilog_en_alu/week_10/adders.v"}
 ```
 
-```{.verilog include="week10/tb_bughunt.v"}
+```{.verilog include="03_verilog_en_alu/week_10/tb_bughunt.v"}
 ```
 
 Draai het en kijk hoeveel pogingen het kostte. Zulke bugs bestaan in echte CPU's: een onopvallend hoekgeval. Daarom zijn er fabrieken met duizenden testservers die dag en nacht random tests draaien.
@@ -96,12 +96,12 @@ Draai het en kijk hoeveel pogingen het kostte. Zulke bugs bestaan in echte CPU's
 
 Een FIFO (first in, first out) is een wachtrij: wat er het eerst in gaat, komt er het eerst uit. CPU's gebruiken ze overal, bijvoorbeeld tussen een UART en de processor, tussen pipeline-fasen en tussen klokdomeinen. De implementatie:
 
-```{.verilog include="week10/fifo.v"}
+```{.verilog include="03_verilog_en_alu/week_10/fifo.v"}
 ```
 
 De testbench houdt zelf een model bij, in gewone variabelen, en vergelijkt elke cyclus. Dit is het patroon: de testbench simuleert wat er hoort te gebeuren, het ontwerp doet het in hardware en een vergelijker controleert of ze hetzelfde zeggen.
 
-```{.verilog include="week10/tb_fifo.v"}
+```{.verilog include="03_verilog_en_alu/week_10/tb_fifo.v"}
 ```
 
 Let op de controle aan het eind: `keer_vol` en `keer_leeg` tellen hoe vaak de FIFO vol en leeg was. Dat is een kleine vorm van coverage, het bewijs dat je test de interessante randgevallen ook echt heeft bereikt. Een test die nooit een volle FIFO ziet, controleert niets over de logica voor een volle FIFO, ook al slaagt hij.
@@ -110,7 +110,7 @@ Let op de controle aan het eind: `keer_vol` en `keer_leeg` tellen hoe vaak de FI
 
 Tekstuitvoer is niet genoeg bij tijdsproblemen. Een golfvorm laat alle signalen in de tijd zien.
 
-```{.verilog include="week10/tb_wave.v"}
+```{.verilog include="03_verilog_en_alu/week_10/tb_wave.v"}
 ```
 
 Na het draaien staat er een bestand `wave.vcd` (value change dump). Open het met GTKWave (`brew install --cask gtkwave`; als die cask op jouw Mac problemen geeft, probeer dan `brew install gtkwave` of een alternatief) of met Surfer (surfer-project.org). Surfer is een moderne viewer die als programma, als VS Code-extensie en zelfs in de browser draait, handig als je niets wilt installeren.
@@ -123,7 +123,7 @@ Sleep `q` en `clk` in het venster en zoom in. Je ziet nu precies wat je tot nu t
 
 Elke keer dat je iets aanpast, wil je alle oude tests opnieuw draaien, en je wilt niet vergeten er een uit te voeren. Het script hieronder compileert en draait elke `tb_*.v` in de huidige map:
 
-```{.bash include="week10/run_all.sh"}
+```{.bash include="03_verilog_en_alu/week_10/run_all.sh"}
 ```
 
 Het script waarmee deze cursus zelf wordt gecontroleerd (`test_labs.py` in de hoofdmap) werkt op dezelfde manier. Maak er een gewoonte van: voordat je iets afrondt, draait `run_all.sh` zonder fouten.
@@ -147,7 +147,7 @@ Schrijf het plan voordat je gaat ontwerpen. Dan weet je al wat "klaar" betekent.
 1. Draai `tb_bughunt`. Hoeveel pogingen kostte het om de bug te vinden? Verklein het aantal random pogingen tot 1000. Vindt hij de bug dan nog? Reken uit waarom (de kans per poging is 16/256 · 1/256 = 1/4096).
 2. Draai `tb_fifo`. Breek daarna het ontwerp op een paar manieren: laat `full` pas bij `count == 9` melden, of laat een gelijktijdige push en pop niet toe. Kijk of de testbench de fout vindt.
 3. Maak `wave.vcd`, open hem in een viewer en voeg de signalen `clk`, `rst_n` en `q` toe. Meet de periode van `q[3]`: is dat 16 klokperioden?
-4. Maak `run_all.sh` en draai hem in `labs/week10`.
+4. Maak `run_all.sh` en draai hem in `labs/03_verilog_en_alu/week_10`.
 5. Zelf doen: schrijf een testbench voor de `counter` uit week 6, met een referentiemodel (een gewone integer). Test load, enable, reset en overloop.
 
 ## 9. Oefeningen

@@ -103,7 +103,7 @@ Met deze vier vlaggen kan een CPU alle vergelijkingen doen. Of de tabel klopt, l
 
 ## 4. De ALU in Verilog
 
-```{.verilog include="week11/alu.v"}
+```{.verilog include="03_verilog_en_alu/week_11/alu.v"}
 ```
 
 Kijk naar de opbouw: eerst de standaardwaarden, dan een `case` die de bewerking kiest, en daarna de vlaggen, die alleen uit `y` volgen. Alle acht de bewerkingen worden tegelijk berekend. De `case` is in hardware een multiplexer die kiest welk resultaat doorgelaten wordt.
@@ -114,7 +114,7 @@ Dit is eenvoudig, maar bruikbaar. Echte ALU's voegen er rotaties, vergelijkingen
 
 Een 8-bit ALU heeft maar 65 536 invoerparen en 8 bewerkingen, dus 524 288 gevallen. Dat doet de simulator in een seconde, dus we testen alles. Het referentiemodel rekent met gewone gehele getallen in de testbench en berekent het resultaat en de vlaggen op een andere manier dan de hardware.
 
-```{.verilog include="week11/tb_alu.v"}
+```{.verilog include="03_verilog_en_alu/week_11/tb_alu.v"}
 ```
 
 Het model berekent de vlaggen op een andere manier dan de hardware: de carry als `volledig > 255` en de overflow door met getallen met teken te rekenen en te kijken of het resultaat buiten −128..127 valt. Delen hardware en model dezelfde denkfout, dan vind je die nooit. Schrijf het model daarom bij voorkeur op een onafhankelijke manier.
@@ -123,13 +123,13 @@ Het model berekent de vlaggen op een andere manier dan de hardware: de carry als
 
 De tabel uit paragraaf 3 is een belofte. We controleren hem voor alle paren.
 
-```{.verilog include="week11/tb_compare.v"}
+```{.verilog include="03_verilog_en_alu/week_11/tb_compare.v"}
 ```
 
 Draai ze:
 
 ```text
-cd labs/week11
+cd labs/03_verilog_en_alu/week_11
 iverilog -g2012 -o a.vvp tb_alu.v alu.v && vvp a.vvp
 iverilog -g2012 -o b.vvp tb_compare.v alu.v && vvp b.vvp
 ```

@@ -81,14 +81,14 @@ Is de klok laag, dan is de master transparant en volgt hij D, terwijl de slave d
 
 Q verandert dus alleen bij de stijgende flank. Echte chips gebruiken slimmere varianten, maar het principe is dit.
 
-```{.verilog include="week05/latches.v"}
+```{.verilog include="02_geheugen_en_tijd/week_05/latches.v"}
 ```
 
 ### Het gedragsmodel in Verilog
 
 Een ontwerper beschrijft een flipflop niet poort voor poort maar via zijn gedrag:
 
-```{.verilog include="week05/dff.v"}
+```{.verilog include="02_geheugen_en_tijd/week_05/dff.v"}
 ```
 
 `always @(posedge clk)` betekent: voer dit blok uit bij elke stijgende flank van `clk`. De `<=` is de niet-blokkerende toekenning (non-blocking). In klokgestuurde logica gebruik je altijd `<=`, in combinatorische `always @*`-blokken gebruik je `=`. Met die ene regel voorkom je de meest gemaakte beginnersfout. In week 9 leggen we hem helemaal uit.
@@ -167,16 +167,16 @@ Je hebt nodig: een 74HC00, een SPDT-schakelaar of twee drukknoppen, 2 × 10 kΩ 
 
 Eerst de latches op poortniveau, daarna het gedrag:
 
-```{.verilog include="week05/tb_latches.v"}
+```{.verilog include="02_geheugen_en_tijd/week_05/tb_latches.v"}
 ```
 
-```{.verilog include="week05/tb_dff.v"}
+```{.verilog include="02_geheugen_en_tijd/week_05/tb_dff.v"}
 ```
 
 Draai ze:
 
 ```text
-cd labs/week05
+cd labs/02_geheugen_en_tijd/week_05
 iverilog -g2012 -o a.vvp tb_latches.v latches.v && vvp a.vvp
 iverilog -g2012 -o b.vvp tb_dff.v dff.v && vvp b.vvp
 ```

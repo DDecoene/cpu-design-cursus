@@ -14,7 +14,7 @@ title: "Week 13 · Instructieset-architectuur (ISA) ontwerpen"
 - de W8-instructieset lezen, met de hand assembleren en decoderen
 - een instructiedecoder in Verilog schrijven en testen
 
-> **Vanaf deze week bouwen we één CPU, stap voor stap.** In week 13 tot 17 maak je een volledige 8-bit processor met een eigen assembler. Alle bestanden komen in dezelfde map: `labs/cpu/`. Maak die map nu aan.
+> **Vanaf deze week bouwen we één CPU, stap voor stap.** In week 13 tot 17 maak je een volledige 8-bit processor met een eigen assembler. Alle bestanden komen in dezelfde map: `labs/04_een_cpu/w8_cpu/`. Maak die map nu aan.
 
 ## 1. Wat is een ISA?
 
@@ -191,25 +191,25 @@ Een kort programma:
 
 ## 5. Lab: de instructiedecoder en een mini-assembler in Verilog
 
-Tot de echte Python-assembler van week 17 gebruiken we iets eenvoudigers: Verilog-functies die een instructiewoord uit zijn velden bouwen. Zo kunnen testbenches programma's laden zonder dat je hex hoeft te typen. Maak `labs/cpu/` aan en sla deze bestanden op.
+Tot de echte Python-assembler van week 17 gebruiken we iets eenvoudigers: Verilog-functies die een instructiewoord uit zijn velden bouwen. Zo kunnen testbenches programma's laden zonder dat je hex hoeft te typen. Maak `labs/04_een_cpu/w8_cpu/` aan en sla deze bestanden op.
 
-```{.verilog include="cpu/asm_funcs.vh"}
+```{.verilog include="04_een_cpu/w8_cpu/asm_funcs.vh"}
 ```
 
 De decoder haalt de velden uit een instructiewoord. In hardware zijn dat alleen draden: een deel van een bus. Een decoder kost dus geen poorten en geen tijd.
 
-```{.verilog include="cpu/idecode.v"}
+```{.verilog include="04_een_cpu/w8_cpu/idecode.v"}
 ```
 
 De test controleert twee dingen. Komen de met de hand berekende hex-waarden uit de tabel overeen met wat de functies maken? En vindt de decoder bij 5000 willekeurige woorden elk veld op de juiste plek?
 
-```{.verilog include="cpu/tb_isa.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_isa.v"}
 ```
 
 Draai:
 
 ```text
-cd labs/cpu
+cd labs/04_een_cpu/w8_cpu
 iverilog -g2012 -o isa.vvp tb_isa.v idecode.v
 vvp isa.vvp
 ```

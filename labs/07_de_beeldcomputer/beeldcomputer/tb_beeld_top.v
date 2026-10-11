@@ -64,7 +64,7 @@ module tb_beeld_top;
           fouten = fouten + 1; $display("FAIL: pixel (%0d,%0d) is %h, verwacht %h", x, y, mon.img[y*640 + x], verwacht);
         end
       end
-    mon.write_ppm("../../build/beeld.ppm");
+    mon.write_ppm("../../../build/beeld.ppm");
     if (fouten == 0) $display("PASS: de computer start de kaart op, leest 19 blokken en toont het beeld");
     $finish;
   end

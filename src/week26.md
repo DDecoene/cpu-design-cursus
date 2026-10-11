@@ -52,42 +52,42 @@ Een tegel is klein (in de orde van duizend standaardcellen; controleer de actuel
 We splitsen het gedragsmodel in een kern met instelbare breedtes (`t8_core`) en een los ROM. Met de volle breedtes (8 en 8) moet de kern exact de machine uit week 19 zijn. Dat controleren we met dezelfde willekeurige test, cyclus voor cyclus.
 
 
-Kopieer `tta.v` en `tta_asm.py` uit `labs/tta/` naar `labs/tt_t8/`.
+Kopieer `tta.v` en `tta_asm.py` uit `labs/05_andere_architecturen/t8_transport_triggered/` naar `labs/06_richting_hardware/t8_naar_silicium/`.
 
-```{.verilog include="tt_t8/t8_core.v"}
+```{.verilog include="06_richting_hardware/t8_naar_silicium/t8_core.v"}
 ```
 
-```{.verilog include="tt_t8/tb_core_equiv.v"}
+```{.verilog include="06_richting_hardware/t8_naar_silicium/tb_core_equiv.v"}
 ```
 
 ### Het programma en het ROM
 
 Het programma in de chip is de rij van Fibonacci, op de uitgangspennen.
 
-```{.text include="tt_t8/chip.tta"}
+```{.text include="06_richting_hardware/t8_naar_silicium/chip.tta"}
 ```
 
 Het ROM maken we met een generator, zodat het programma de enige bron van waarheid blijft:
 
-```{.python include="tt_t8/mkrom.py"}
+```{.python include="06_richting_hardware/t8_naar_silicium/mkrom.py"}
 ```
 
-```{.python include="tt_t8/test_mkrom.py"}
+```{.python include="06_richting_hardware/t8_naar_silicium/test_mkrom.py"}
 ```
 
 Het resultaat voor ons programma (gegenereerd, nooit met de hand aanpassen):
 
-```{.verilog include="tt_t8/rom_t8.v"}
+```{.verilog include="06_richting_hardware/t8_naar_silicium/rom_t8.v"}
 ```
 
 ### Het toplevel voor de chip
 
-```{.verilog include="tt_t8/tt_t8.v"}
+```{.verilog include="06_richting_hardware/t8_naar_silicium/tt_t8.v"}
 ```
 
 ### De test van de chip
 
-```{.verilog include="tt_t8/tb_tt_t8.v"}
+```{.verilog include="06_richting_hardware/t8_naar_silicium/tb_tt_t8.v"}
 ```
 
 ## 3. Hoe groot is hij?
@@ -104,7 +104,7 @@ Dat is een belangrijke les over chips: een vast programma in ROM is geen softwar
 
 Om te weten hoe groot de machine is die elk programma kan draaien, synthetiseren we de kern los, met de instructie als ingang:
 
-```{.python include="tt_t8/core_size.py"}
+```{.python include="06_richting_hardware/t8_naar_silicium/core_size.py"}
 ```
 
 De uitkomst:
@@ -120,7 +120,7 @@ De uitkomst:
 
 Zo lees je dit: de kern zonder geheugen is ongeveer 500 tot 600 cellen. Elk extra bit RAM kost een flipflop plus uitleeslogica. Het RAM van 256 bytes is verantwoordelijk voor ruim 85 % van de volledige machine. Een chip met een programma in ROM komt dus in de orde van 800 tot 1000 cellen (de ROM-logica erbij), aan de rand van wat in één kleine tegel past. Reken het zelf na met de actuele tegelgrootte.
 
-```{.bash include="tt_t8/chip_size.sh"}
+```{.bash include="06_richting_hardware/t8_naar_silicium/chip_size.sh"}
 ```
 
 ### Wat je hiermee leert

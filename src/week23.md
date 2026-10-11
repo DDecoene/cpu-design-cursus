@@ -98,21 +98,21 @@ Let op de resetsynchronizer. Een knop is asynchroon. Hij mag asynchroon activere
 De parameters `DIV` en `TDIV` rekenen we uit de klokfrequentie: `DIV = CLK_HZ / BAUD` (klokcycli per UART-bit) en `TDIV = CLK_HZ / 1000` (cycli per milliseconde).
 
 
-```{.verilog include="cpu_irq/fpga_top.v"}
+```{.verilog include="05_andere_architecturen/w8_interrupts_en_io/fpga_top.v"}
 ```
 
 ### Een programma voor het bord
 
 Het programma stuurt eerst "W8 OK" via de UART (je ziet dat in een terminal) en laat daarna de LED elke 250 ms knipperen met de timer-interrupt:
 
-```{.text include="cpu_irq/hello.asm"}
+```{.text include="05_andere_architecturen/w8_interrupts_en_io/hello.asm"}
 ```
 
 ### De testbench voor het toplevel
 
 In de simulatie gebruiken we een kleine klok (16 000 Hz, 1 000 baud) zodat de test snel is, en een onafhankelijke UART-ontvanger die de lijn afluistert:
 
-```{.verilog include="cpu_irq/tb_fpga_top.v"}
+```{.verilog include="05_andere_architecturen/w8_interrupts_en_io/tb_fpga_top.v"}
 ```
 
 ## 5. Een les uit de praktijk: alles verdwijnt
@@ -149,13 +149,13 @@ Wat je hieruit leert:
 
 Het script voert synthese, plaatsen en routeren en het maken van de bitstream uit. Het maakt de virtuele omgeving zelf aan als die ontbreekt.
 
-```{.bash include="cpu_irq/fpga_flow.sh"}
+```{.bash include="05_andere_architecturen/w8_interrupts_en_io/fpga_flow.sh"}
 ```
 
 Gebruik:
 
 ```text
-cd labs/cpu_irq
+cd labs/05_andere_architecturen/w8_interrupts_en_io
 bash fpga_flow.sh hx8k
 ```
 

@@ -124,15 +124,15 @@ Hoe schuif je 0 tot 7 plaatsen in één klokcyclus? Niet met zeven keer één pl
 
 Voor W bits heb je log₂(W) trappen van W multiplexers. Bij 32 bits zijn dat 5 × 32 = 160 multiplexers en een vertraging van 5 mux-niveaus. Elke shift duurt dus even lang, wat je ook kiest.
 
-```{.verilog include="week12/shifter.v"}
+```{.verilog include="03_verilog_en_alu/week_12/shifter.v"}
 ```
 
 Een ASR over meerdere trappen werkt: elke trap kopieert het tekenbit opnieuw. Een rotatie over meerdere trappen werkt ook.
 
-```{.verilog include="week12/sext.v"}
+```{.verilog include="03_verilog_en_alu/week_12/sext.v"}
 ```
 
-```{.verilog include="week12/tb_shifter.v"}
+```{.verilog include="03_verilog_en_alu/week_12/tb_shifter.v"}
 ```
 
 ## 6. Vermenigvuldigen
@@ -172,10 +172,10 @@ Zo werkt de rekenmachine in cijfers: een register voor het opgeschoven vermenigv
 
 Het gedrag is een mini-FSM met twee toestanden (rust en bezig), plus een teller. In Verilog ziet dat er zo uit:
 
-```{.verilog include="week12/mul8.v"}
+```{.verilog include="03_verilog_en_alu/week_12/mul8.v"}
 ```
 
-```{.verilog include="week12/tb_mul8.v"}
+```{.verilog include="03_verilog_en_alu/week_12/tb_mul8.v"}
 ```
 
 ### Delen
@@ -185,7 +185,7 @@ Delen is trager dan vermenigvuldigen. Het eenvoudigste algoritme (restoring divi
 ## 7. Draai de labs
 
 ```text
-cd labs/week12
+cd labs/03_verilog_en_alu/week_12
 iverilog -g2012 -o a.vvp tb_shifter.v shifter.v sext.v && vvp a.vvp
 iverilog -g2012 -o b.vvp tb_mul8.v mul8.v && vvp b.vvp
 ```

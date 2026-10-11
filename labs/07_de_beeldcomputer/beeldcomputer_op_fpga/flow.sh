@@ -1,11 +1,11 @@
 #!/bin/bash
 # Synthese, plaatsen en routeren en een bitstream voor de beeldcomputer op een iCE40 UP5K, met de open-source tools.
-# Gebruik:  bash flow.sh          (vanuit labs/beeld_fpga; de bronbestanden staan in ../beeld)
+# Gebruik:  bash flow.sh          (vanuit labs/07_de_beeldcomputer/beeldcomputer_op_fpga; de bronbestanden staan in ../beeldcomputer)
 # Omgevingsvariabelen:  VENV=map met de virtuele omgeving   PCF=pinbestand van je bord   SEED=startwaarde voor het plaatsen
 set -e
 VENV=${VENV:-$HOME/fpga-venv}
 SEED=${SEED:-1}
-SRC=$(cd ../beeld && pwd)                       # absoluut, want we gaan zo naar uit/
+SRC=$(cd ../beeldcomputer && pwd)                       # absoluut, want we gaan zo naar uit/
 
 # Dezelfde afgesloten Python-omgeving als in week 23 (wordt aangemaakt als hij nog niet bestaat)
 if [ ! -d "$VENV" ]; then

@@ -76,7 +76,7 @@ Het is belangrijk dat de master MOSI **niet** verandert op de stijgende flank, w
 
 Twee snelheden. De SD-specificatie vraagt tijdens het opstarten een klok van hoogstens 400 kHz, daarna mag het veel sneller. De klokdeler telt `HALF_SLOW = 16` klokken per halve periode bij het opstarten (12 MHz / 32 = 375 kHz) en `HALF_FAST = 2` daarna (12 MHz / 4 = 3 MHz).
 
-```{.verilog include="beeld/spi_master.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/spi_master.v"}
 ```
 
 Een paar ontwerpkeuzes:
@@ -97,14 +97,14 @@ De CPU ziet de SPI-poort als drie geheugenplaatsen:
 
 Chip select is een bit dat de software zet en niet een deel van de overdracht. Dat lijkt onhandig, maar een SD-kaart verwacht dat CS laag blijft gedurende een heel commando van meerdere bytes (6 bytes commando, dan het antwoord, en bij lezen nog 512 bytes data). Een master die CS bij elk byte op- en neerhaalt zou dat verbreken.
 
-```{.verilog include="beeld/spi_io.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/spi_io.v"}
 ```
 
 ## 4. Nog een laagje
 
 Net als vorige week leggen we er een laagje omheen in plaats van `mmio_v` te veranderen. `mmio_b` bevat een `mmio_v` en een `spi_io`, en kijkt naar de bovenste zes adresbits: `111111` is `0xFC` tot en met `0xFF`, en alles daaronder gaat naar `mmio_v`. De CPU is daarmee voor de tweede keer uitgebreid zonder dat het origineel is aangeraakt, en `cpu_b` ontstaat op dezelfde manier uit `cpu_v` als `cpu_v` uit `cpu_f`.
 
-```{.verilog include="beeld/mmio_b.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/mmio_b.v"}
 ```
 
 De hele geheugenkaart van de beeldcomputer ziet er nu zo uit:
@@ -132,7 +132,7 @@ De hele geheugenkaart van de beeldcomputer ziet er nu zo uit:
 
 Een SPI-master controleer je tegen iets dat de regels kent. We schrijven een slave in Verilog die zich gedraagt als een kaart: hij leest MOSI op de stijgende flank, zet MISO na de dalende flank, onthoudt wat hij ontving en antwoordt met vaste bytes. Zo test de bench beide richtingen en let de slave zelf op het protocol.
 
-```{.verilog include="beeld/tb_spi.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/tb_spi.v"}
 ```
 
 De test controleert niet alleen of de bytes aankomen, maar ook het gedrag eromheen:
@@ -145,10 +145,10 @@ De test controleert niet alleen of de bytes aankomen, maar ook het gedrag eromhe
 
 Daarna de CPU zelf. Dit programma verstuurt 8 bytes met MISO en MOSI doorverbonden, en telt hoeveel er goed terugkomen:
 
-```{.text include="beeld/spi_test.asm"}
+```{.text include="07_de_beeldcomputer/beeldcomputer/spi_test.asm"}
 ```
 
-```{.verilog include="beeld/tb_spi_cpu.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/tb_spi_cpu.v"}
 ```
 
 ### Streng genoeg?
@@ -168,7 +168,7 @@ Dat is de snelheid van de lijn, niet van het programma. De CPU moet na elk byte 
 
 ## 7. Lab
 
-1. Draai de tests van fase 7 (`python3 test_labs.py beeld`) en zoek de PASS-regels van `tb_spi` en `tb_spi_cpu`.
+1. Draai de tests van fase 7 (`python3 test_labs.py beeldcomputer`) en zoek de PASS-regels van `tb_spi` en `tb_spi_cpu`.
 2. Zet in `spi_master.v` de waarde van `HALF_SLOW` op 15. Welke frequentie geeft dat, en waarom kiezen we toch liever 16? Welke test faalt?
 3. Open een golfvorm van `tb_spi` (voeg `$dumpfile` en `$dumpvars` toe) en zoek de plek waar MOSI verandert. Verandert hij op de dalende flank van SCLK, zoals het hoort?
 4. Verander in `spi_test.asm` de testbytes en laat de tests slagen. Verwissel dan `CMP R0, R4` voor `CMP R0, R2` en kijk wat de test zegt.

@@ -28,7 +28,7 @@ module tb_vga_testbeeld;
           fouten = fouten + 1; $display("FAIL: pixel (%0d,%0d) is %h, verwacht %h", x, y, mon.img[y*640 + x], verwacht);
         end
       end
-    mon.write_ppm("../../build/testbeeld.ppm");
+    mon.write_ppm("../../../build/testbeeld.ppm");
     if (fouten == 0) $display("PASS: alle 307200 pixels van het testbeeld liggen op de goede plek");
     $finish;
   end

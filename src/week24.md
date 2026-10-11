@@ -99,7 +99,7 @@ De CPU heet W8F (F voor FPGA). Alles blijft hetzelfde, behalve drie bestanden. K
 
 ### Het datageheugen met synchrone uitlezing
 
-```{.verilog include="cpu_fpga/memories_f.v"}
+```{.verilog include="06_richting_hardware/w8_op_fpga/memories_f.v"}
 ```
 
 Dit is het hele geheim: de uitlezing zit binnen het klokgestuurde blok. Yosys herkent het patroon en gebruikt een `SB_RAM40_4K`, een ingebouwd geheugenblok.
@@ -114,22 +114,22 @@ Voor de rest is dit `control_i.v` van week 22. Het verschil is dat de toestand `
 | 1 | het adres wordt aan het geheugen aangeboden en aan het eind van deze stap legt het geheugen de data vast |
 | 2 | het gelezen woord gaat naar het register |
 
-```{.verilog include="cpu_fpga/control_f.v"}
+```{.verilog include="06_richting_hardware/w8_op_fpga/control_f.v"}
 ```
 
 ### De apparaten: ook een klokperiode vertraging
 
 Het RAM geeft zijn data een periode later, dus moeten de apparaatregisters dat ook doen. Anders weet de CPU niet wanneer een lezing geldig is. De multiplexer die kiest tussen RAM en apparaat gebruikt het adres uit de vorige periode.
 
-```{.verilog include="cpu_fpga/mmio_f.v"}
+```{.verilog include="06_richting_hardware/w8_op_fpga/mmio_f.v"}
 ```
 
 ### De CPU en het toplevel
 
-```{.verilog include="cpu_fpga/cpu_f.v"}
+```{.verilog include="06_richting_hardware/w8_op_fpga/cpu_f.v"}
 ```
 
-```{.verilog include="cpu_fpga/fpga_top_f.v"}
+```{.verilog include="06_richting_hardware/w8_op_fpga/fpga_top_f.v"}
 ```
 
 ## 4. Verificatie van W8F
@@ -138,7 +138,7 @@ Het RAM geeft zijn data een periode later, dus moeten de apparaatregisters dat o
 
 W8I (asynchroon RAM) en W8F draaien dezelfde zes programma's tegelijk. Registers, vlaggen en het hele RAM moeten identiek zijn, en W8F mag precies één cyclus per uitgevoerde `LD` langer doen. Die laatste eis is scherp: klopt het aantal cycli niet exact, dan gebeurt er iets wat je niet begrijpt.
 
-```{.verilog include="cpu_fpga/tb_f_compare.v"}
+```{.verilog include="06_richting_hardware/w8_op_fpga/tb_f_compare.v"}
 ```
 
 De meting:
@@ -205,13 +205,13 @@ In week 23 ging het mis: de simulatie slaagde, maar de hardware was leeg. Een ga
 
 Voor een snelle simulatie gebruiken we dezelfde kleine klok als in de testbench van week 23:
 
-```{.verilog include="cpu_fpga/fpga_top_small.v"}
+```{.verilog include="06_richting_hardware/w8_op_fpga/fpga_top_small.v"}
 ```
 
 
 De testbench voor de netlijst is `tb_fpga_top_f.v` met twee vervangingen: `module tb_gate;` en `fpga_top_small dut(`.
 
-```{.bash include="cpu_fpga/gatesim.sh"}
+```{.bash include="06_richting_hardware/w8_op_fpga/gatesim.sh"}
 ```
 
 ```text

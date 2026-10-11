@@ -127,16 +127,16 @@ Een goed ISA-ontwerp probeert het aantal van zulke uitzonderingen klein te houde
 We hergebruiken de ALU uit week 11 (kopieer hem) en voegen twee kleine geheugenmodules toe: het instructiegeheugen en het datageheugen.
 
 
-Kopieer `labs/week11/alu.v` naar `labs/cpu/alu.v`. Het is dezelfde ALU, onveranderd. Dat is het voordeel van een goed ontworpen en grondig geteste module: je kunt hem gewoon hergebruiken.
+Kopieer `labs/03_verilog_en_alu/week_11/alu.v` naar `labs/04_een_cpu/w8_cpu/alu.v`. Het is dezelfde ALU, onveranderd. Dat is het voordeel van een goed ontworpen en grondig geteste module: je kunt hem gewoon hergebruiken.
 
-```{.verilog include="cpu/memories.v"}
+```{.verilog include="04_een_cpu/w8_cpu/memories.v"}
 ```
 
 Let op twee dingen. `imem` is een ROM met een hex-bestand (`LOAD` bepaalt of het bestand geladen wordt, want testbenches schrijven soms liever rechtstreeks). Leeg geheugen is gevuld met `NOP` (`0xA000`), zodat een verdwaalde PC niets kwaads doet. En `dmem` leest asynchroon (zodra het adres verandert, verandert de uitgang) en schrijft synchroon op de klokflank. Zo kan een `LD` binnen één cyclus een waarde teruggeven.
 
 ## 6. Het datapath in Verilog
 
-```{.verilog include="cpu/datapath.v"}
+```{.verilog include="04_een_cpu/w8_cpu/datapath.v"}
 ```
 
 Neem de tijd om dit stuk voor stuk door te lezen. Het is de eerste module in de cursus waarin alle onderdelen samenkomen.
@@ -151,7 +151,7 @@ Neem de tijd om dit stuk voor stuk door te lezen. Het is de eerste module in de 
 
 Voordat we de echte besturing bouwen, testen we het datapath zelf. De testbench zet per klokcyclus de besturingssignalen, precies zoals de besturing straks zal doen. Zo test je het datapath los van de besturing en leer je meteen wat die laatste moet doen.
 
-```{.verilog include="cpu/tb_datapath.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_datapath.v"}
 ```
 
 Elke instructie loopt in twee stappen: eerst `fetch` (laad het instructieregister en verhoog de PC), dan een uitvoerstap met de juiste combinatie van signalen. Vergelijk die signalen met de tabel in paragraaf 4:
@@ -169,7 +169,7 @@ Elke instructie loopt in twee stappen: eerst `fetch` (laad het instructieregiste
 Draai:
 
 ```text
-cd labs/cpu
+cd labs/04_een_cpu/w8_cpu
 iverilog -g2012 -o dp.vvp tb_datapath.v alu.v idecode.v memories.v datapath.v
 vvp dp.vvp
 ```

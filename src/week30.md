@@ -96,12 +96,12 @@ Het formaat is simpel: 160 x 120 pixels, 4 bit per pixel, twee pixels per byte (
 
 Het script `mkbeeld.py` maakt zo'n bestand. Met `demo` maakt hij een smiley op een blauwe achtergrond met een raster, een witte rand en onderaan de 16 kleuren. Met een PPM-bestand (het formaat uit week 27) als argument zet hij een eigen beeld om naar de 16 kleuren van de palette: voor elke pixel de dichtstbijzijnde kleur.
 
-```{.python include="beeld/mkbeeld.py"}
+```{.python include="07_de_beeldcomputer/beeldcomputer/mkbeeld.py"}
 ```
 
 De palette in Python moet gelijk zijn aan die in `video_out.v`, anders komen de kleuren van je foto er anders uit dan je verwacht. Daarom leest de test de palette uit het Verilog-bestand en vergelijkt hem met die in Python. Zo'n controle is goedkoop en voorkomt een soort fout die je op het scherm moeilijk terugvindt.
 
-```{.python include="beeld/test_mkbeeld.py"}
+```{.python include="07_de_beeldcomputer/beeldcomputer/test_mkbeeld.py"}
 ```
 
 ### Je eigen beeld op een kaart zetten
@@ -126,7 +126,7 @@ Zonder echte kaart hebben we iets nodig dat zich als een kaart gedraagt. Het mod
 
 Het model laat ACMD41 een paar keer `0x01` zeggen voordat hij `0x00` geeft (standaard drie keer), zoals een echte kaart. Een programma dat verwacht dat de kaart bij de eerste poging klaar is, faalt dus. Zo'n gedrag moet de simulatie dwingen, anders bouw je een programma dat alleen op een perfecte kaart werkt.
 
-```{.verilog include="beeld/sd_model.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/sd_model.v"}
 ```
 
 ## 5. Het bootprogramma
@@ -144,7 +144,7 @@ Hulproutines:
 
 De LED's (GPIO) tonen waar het programma is: 1 = klokpulsen en CMD0 bezig, 2 = CMD0 gelukt, 3 = CMD8 gelukt, 4 = kaart klaar, 5 = bezig met lezen, `0x10` als alles klaar is, en bit 7 erbij als er iets misgaat. Die LED-nummers tellen dus anders dan de lijst in paragraaf 1. Zo kun je met een bord zonder scherm toch zien waar het mis ging.
 
-```{.text include="beeld/boot.asm"}
+```{.text include="07_de_beeldcomputer/beeldcomputer/boot.asm"}
 ```
 
 Wat dit programma niet doet:
@@ -158,7 +158,7 @@ Wat dit programma niet doet:
 
 De top verbindt alles: de CPU met SPI en video, het framebuffer, de VGA-uitgang en de SD-kaart. Het is `beeld_v` van week 28 met `cpu_b` in plaats van `cpu_v`, en de SPI-pinnen naar buiten.
 
-```{.verilog include="beeld/beeld_top.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/beeld_top.v"}
 ```
 
 De testbench zet het kaartmodel (met het demobeeld) aan de SPI-pinnen, laat het bootprogramma lopen en wacht tot de LED's `0x10` tonen. Dan controleert hij:
@@ -167,7 +167,7 @@ De testbench zet het kaartmodel (met het demobeeld) aan de SPI-pinnen, laat het 
 - dat de SPI-klok tijdens het opstarten niet sneller was dan 400 kHz
 - elke pixel van het scherm (307 200 stuks) tegen wat er volgens het bestand moet staan, met een eigen kopie van de palette
 
-```{.verilog include="beeld/tb_beeld_top.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/tb_beeld_top.v"}
 ```
 
 Het resultaat in de simulatie, bij een CPU-klok van 12 MHz en een kaart die ACMD41 drie keer idle meldt:
@@ -193,19 +193,19 @@ Voor deze week zijn twee proeven gedaan.
 
 ## 7. Naar de FPGA
 
-Het ontwerp past op de UP5K. Voor een echt bord komen er drie dingen bij: een PLL die de pixelklok uit de 12 MHz maakt, een toplevel met de pinnen, en een pinbestand. Die staan in `labs/beeld_fpga/` en gebruiken chipspecifieke onderdelen, dus Icarus kan ze niet simuleren.
+Het ontwerp past op de UP5K. Voor een echt bord komen er drie dingen bij: een PLL die de pixelklok uit de 12 MHz maakt, een toplevel met de pinnen, en een pinbestand. Die staan in `labs/07_de_beeldcomputer/beeldcomputer_op_fpga/` en gebruiken chipspecifieke onderdelen, dus Icarus kan ze niet simuleren.
 
 De PLL volgt uit het hulpprogramma `icepll -i 12 -o 25.175`, dat 25,125 MHz geeft (VCO 804 MHz, gedeeld door 32). De reset blijft actief tot de PLL vergrendeld is.
 
-```{.verilog include="beeld_fpga/pll_ice40.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer_op_fpga/pll_ice40.v"}
 ```
 
-```{.verilog include="beeld_fpga/ice40_top.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer_op_fpga/ice40_top.v"}
 ```
 
 Het script voert dezelfde stappen uit als in week 23 en 24: synthese met Yosys, plaatsen en routeren met nextpnr, en een bitstream met icepack. Het gebruikt alleen de bestanden die op de chip komen en laat de testbenches, de virtuele monitor en het kaartmodel buiten de deur.
 
-```{.bash include="beeld_fpga/flow.sh"}
+```{.bash include="07_de_beeldcomputer/beeldcomputer_op_fpga/flow.sh"}
 ```
 
 Resultaten van `flow.sh` (Yosys en nextpnr via YoWASP, drie seeds):
@@ -229,7 +229,7 @@ Wat er niet gedaan is: een gate-level simulatie van de hele computer (die van we
 
 `beeld_voorbeeld.pcf` bevat alle signalen met vraagtekens in plaats van pinnummers. Vul ze in uit het schema van je bord en de handleidingen van je VGA- en SD-module, en geef het door: `PCF=beeld.pcf bash flow.sh`. Zonder pinbestand kiest nextpnr zelf pinnen. Dat is goed om te meten maar niet om op een bord te laden: er kunnen uitgangen op pinnen komen die ergens anders mee verbonden zijn.
 
-```{.text include="beeld_fpga/beeld_voorbeeld.pcf"}
+```{.text include="07_de_beeldcomputer/beeldcomputer_op_fpga/beeld_voorbeeld.pcf"}
 ```
 
 ### Als het op een echt bord niet werkt
@@ -262,7 +262,7 @@ Alleen de derde stap is wat je een 3D-processor zou noemen, en ze is veel groter
 
 ## 9. Lab
 
-1. Draai alle tests van fase 7: `python3 test_labs.py beeld`. Het duurt ongeveer een minuut. Zoek de tien regels met `ok` (twee Python-tests en acht testbenches).
+1. Draai alle tests van fase 7: `python3 test_labs.py beeldcomputer`. Het duurt ongeveer een minuut. Zoek de tien regels met `ok` (twee Python-tests en acht testbenches).
 2. Maak een eigen beeld (`magick ... foto.ppm`, `mkbeeld.py foto.ppm foto`). Kopieer `foto.hex` naar `sd.hex` en draai `tb_beeld_top` opnieuw. Wat zie je in `build/beeld.ppm`?
 3. Zet `ACMD41_TRIES` in het kaartmodel op 30. Hoe lang duurt het opstarten nu? Past dat bij wat je op een echte kaart zou verwachten?
 4. Zet `NCR` op 8 (het maximum uit de specificatie). Werkt het programma nog? En op 17?

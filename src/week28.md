@@ -82,7 +82,7 @@ Er zijn twee verstandige oplossingen:
 
 Een regel om te onthouden: **enkele bits via een synchronizer, hele woorden via een RAM met twee poorten**. Een synchronizer voor een woord van 8 bit werkt niet, want de bits kunnen op verschillende klokken aankomen en dan krijg je een mengsel van oud en nieuw.
 
-```{.verilog include="beeld/fb_ram.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/fb_ram.v"}
 ```
 
 De regel `always @(posedge rclk) rdata <= mem[raddr]` is belangrijk. Het geheugen heeft een geregistreerde uitgang: de data komt één klok na het adres. Dat is wat de synthesetool nodig heeft om er blok-RAM van te maken, en het kost ons een klok vertraging die we zo moeten opvangen.
@@ -93,7 +93,7 @@ Wat gebeurt er als de CPU en de monitor op hetzelfde moment hetzelfde adres rake
 
 De module `video_out` verbindt de generator uit week 27 met het framebuffer en de palette. Hij heeft een schrijfpoort voor de CPU-kant en de VGA-pinnen aan de andere kant.
 
-```{.verilog include="beeld/video_out.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/video_out.v"}
 ```
 
 Er zijn drie stappen en elk kost een klok:
@@ -121,7 +121,7 @@ De CPU ziet het beeld als vier geheugenplaatsen. Het datageheugen van W8F heeft 
 
 Het adres loopt van 0 tot 9 599 (`0x257F`). De module houdt zich eraan: een schrijfactie op een adres vanaf 9 600 wordt genegeerd, en het adres loopt niet verder op. Dat voorkomt dat een programma dat een paar bytes te ver schrijft het beeld aan de andere kant laat terugkomen. We hebben het nodig in week 30: 19 blokken van 512 bytes geven 9 728 bytes, iets meer dan de 9 600 die we nodig hebben.
 
-```{.verilog include="beeld/video_io.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/video_io.v"}
 ```
 
 Het register `vb1, vb2` is de synchronizer van `vblank`. Het signaal komt uit het klokdomein van het beeld en wordt door twee flipflops in het CPU-domein gehaald, zodat de CPU het veilig kan lezen.
@@ -130,7 +130,7 @@ Het register `vb1, vb2` is de synchronizer van `vblank`. Het signaal komt uit he
 
 We willen `mmio_f` (de geheugenkaart met UART, timer en GPIO uit week 22 en 24) niet veranderen. Zijn tests slagen, en het is goed om werkende code met rust te laten. In plaats daarvan leggen we er een laagje omheen. `mmio_v` bevat een `mmio_f` en een `video_io`, en kijkt naar de bovenste zes adresbits: zijn het `111110` (adressen `0xF8` tot en met `0xFB`), dan is het voor het beeld, anders voor `mmio_f`.
 
-```{.verilog include="beeld/mmio_v.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/mmio_v.v"}
 ```
 
 Eén ding vraagt aandacht. Bij W8F duurt een `LD` drie klokken: de CPU biedt het adres aan, het geheugen en de apparaten houden hun antwoord een klok vast, en in de derde klok neemt de CPU de waarde over. Ons nieuwe apparaat moet dezelfde afspraak volgen, en dat doet het door `v_q` en `vsel_q` te registreren zoals `mmio_f` dat met zijn eigen waarden doet. Sla je dat over, dan leest de CPU een klok te vroeg of te laat en zie je willekeurige waarden. Zo'n fout is moeilijk te vinden zonder golfvorm.
@@ -149,17 +149,17 @@ Zo blijft de bestaande CPU onaangeroerd en ziet de nieuwe versie er bijna hetzel
 
 De top verbindt de CPU met het beeld. Er zijn twee klokken, dus ook twee resets. Een reset is een asynchroon signaal (de knop) en moet in elk klokdomein synchroon eindigen, anders kan een deel van de flipflops net wel en een deel net niet uit reset komen. Dat is `reset_sync`: twee flipflops, hetzelfde als in week 23.
 
-```{.verilog include="beeld/reset_sync.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/reset_sync.v"}
 ```
 
-```{.verilog include="beeld/beeld_v.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/beeld_v.v"}
 ```
 
 ## 9. Het eerste programma
 
 Het eerste programma vult het scherm met 16 verticale balken, een voor elke kleur in de palette. Het gebruikt een trucje dat je in elk programma voor deze computer terugziet: één register (`R3`) bevat het basisadres `0xF0` van de apparaten, en alle apparaten worden benaderd als `[R3 + offset]`. De offsets van de tabel staan dan rechtstreeks in de code (`+8` voor FB_LO, `+10` voor FB_DATA). Dat past in de 6 bit offset van `LD` en `ST` en bespaart een `LDI` bij elke toegang.
 
-```{.text include="beeld/kleurbalken.asm"}
+```{.text include="07_de_beeldcomputer/beeldcomputer/kleurbalken.asm"}
 ```
 
 Het byte `0x00` is twee zwarte blokken, `0x11` twee blauwe, tot `0xFF` (wit): de hoge en lage nibble zijn gelijk, dus beide pixels hebben dezelfde kleur. Elke balk is 5 bytes (10 blokken, 40 schermpixels) breed, en 16 balken zijn 80 bytes, dus precies een rij.
@@ -170,17 +170,17 @@ Er zijn drie testbenches, van klein naar groot.
 
 `tb_video_io` kijkt alleen naar de registers via de buslijnen, zoals de CPU dat doet: adres instellen, auto-increment, de grens bij 9 600 en de vblank-status.
 
-```{.verilog include="beeld/tb_video_io.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/tb_video_io.v"}
 ```
 
 `tb_video_out` zet een patroon rechtstreeks in het framebuffer (zonder CPU) en controleert elke pixel van het scherm via de virtuele monitor. De twee klokken zijn bewust ongelijk (12 MHz en 25,125 MHz): de testbench laat zien dat de brug tussen de twee klokken werkt. Het patroon is een functie van het byteadres, zodat een verkeerd adres of een omgewisselde nibble meteen opvalt.
 
-```{.verilog include="beeld/tb_video_out.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/tb_video_out.v"}
 ```
 
 `tb_beeld_v` laat de CPU het programma uitvoeren en controleert wat er op het scherm komt:
 
-```{.verilog include="beeld/tb_beeld_v.v"}
+```{.verilog include="07_de_beeldcomputer/beeldcomputer/tb_beeld_v.v"}
 ```
 
 ### Streng genoeg?
@@ -198,7 +198,7 @@ De kleurbalken zijn in 6,5 ms klaar op een CPU-klok van 12 MHz. Dat is 77 760 kl
 
 ## 11. Lab
 
-1. Draai de tests van fase 7 (`python3 test_labs.py beeld`) en zoek de PASS-regels van `tb_video_io`, `tb_video_out` en `tb_beeld_v`.
+1. Draai de tests van fase 7 (`python3 test_labs.py beeldcomputer`) en zoek de PASS-regels van `tb_video_io`, `tb_video_out` en `tb_beeld_v`.
 2. Zet `build/kleurbalken.ppm` om naar PNG (`ppm2png.py`, week 27) en bekijk hem. Zie je 16 balken?
 3. Verander in `kleurbalken.asm` het aantal bytes per balk van 5 in 4. Het scherm wordt niet meer volledig gevuld. Wat ziet de test en wat zie je in de afbeelding?
 4. Schrijf een programma dat het scherm vult met een dambord van 8 x 8 blokken, afwisselend zwart en wit. Pas `tb_beeld_v` aan zodat hij het dambord controleert.

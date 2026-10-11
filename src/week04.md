@@ -48,7 +48,7 @@ De formule is y = s'·a + s·b. Voor vier ingangen heb je twee selectbits nodig,
 
 In een CPU zitten overal muxen. Gaat er een register of een constante de ALU in? Schrijf je het ALU-resultaat of data uit het geheugen terug in een register? Elk van die keuzes is een mux, en een CPU heeft er tientallen.
 
-```{.verilog include="week04/mux.v"}
+```{.verilog include="01_elektronica_en_logica/week_04/mux.v"}
 ```
 
 Met `#(parameter W = 1)` is de module herbruikbaar: `mux2 #(8)` is een 8-bit mux en `mux2 #(16)` een 16-bit mux. Je schrijft de module één keer en gebruikt hem overal.
@@ -65,7 +65,7 @@ Een 3→8 decoder heeft 3 ingangen en 8 uitgangen. Met een enable (`en`) zet je 
 
 Een CPU gebruikt dit om één register uit acht te kiezen waarin geschreven wordt, of om een geheugenchip te kiezen op basis van het adres. De decoder maakt van "nummer 5" een draad die aan gaat.
 
-```{.verilog include="week04/decoder.v"}
+```{.verilog include="01_elektronica_en_logica/week_04/decoder.v"}
 ```
 
 De chip hiervoor is de 74HC138. Bij die chip zijn de uitgangen actief laag: de gekozen uitgang is 0 en de rest 1. Dat zie je vaak in 74-chips. In het datablad herken je zulke signalen aan een streep boven de naam of aan een `n` of `#` erachter.
@@ -105,7 +105,7 @@ Cout = A·B + Cin·(A ⊕ B)
 
 Je bouwt hem uit twee halve optellers en een OR-poort.
 
-```{.verilog include="week04/adder.v"}
+```{.verilog include="01_elektronica_en_logica/week_04/adder.v"}
 ```
 
 ### Waarom ripple-carry traag is
@@ -130,23 +130,23 @@ Een zevensegmentdisplay heeft zeven LED-streepjes (a tot en met g). Een decoder 
    ─d─
 ```
 
-```{.verilog include="week04/seg7.v"}
+```{.verilog include="01_elektronica_en_logica/week_04/seg7.v"}
 ```
 
 `always @*` betekent: dit is combinatorische logica, herbereken het bij elke verandering van een ingang. Een `case` is een tabel, dus een waarheidstabel in code. In week 9 gaan we dieper op deze constructies in.
 
 ## 7. Tests
 
-```{.verilog include="week04/tb_adder4.v"}
+```{.verilog include="01_elektronica_en_logica/week_04/tb_adder4.v"}
 ```
 
-```{.verilog include="week04/tb_mux_dec_seg.v"}
+```{.verilog include="01_elektronica_en_logica/week_04/tb_mux_dec_seg.v"}
 ```
 
 Draai alles:
 
 ```text
-cd labs/week04
+cd labs/01_elektronica_en_logica/week_04
 iverilog -g2012 -o a.vvp tb_adder4.v adder.v && vvp a.vvp
 iverilog -g2012 -o b.vvp tb_mux_dec_seg.v mux.v decoder.v seg7.v && vvp b.vvp
 ```

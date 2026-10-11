@@ -126,14 +126,14 @@ De Z-vlag is een NOR met 8 ingangen (74HC4078) over de resultaatbus. De N-vlag i
 Eerst de chipmodellen. Elk model heeft de pinnen en de actief-laag-conventies van het datablad, plus een typische vertraging. Die vertragingen zijn schattingen, dus controleer ze in de databladen van de chips die je koopt.
 
 
-Kopieer het gedragsmodel (`tta.v`), de assembler (`tta_asm.py`) en de programma's uit `labs/tta/` naar `labs/tta_hw/`.
+Kopieer het gedragsmodel (`tta.v`), de assembler (`tta_asm.py`) en de programma's uit `labs/05_andere_architecturen/t8_transport_triggered/` naar `labs/06_richting_hardware/t8_op_74hc_print/`.
 
-```{.verilog include="tta_hw/hc74xx.v"}
+```{.verilog include="06_richting_hardware/t8_op_74hc_print/hc74xx.v"}
 ```
 
 Dan het bord zelf. Elke `u_...` is één chip en elke `wire` een draad. Als je een schema in KiCad tekent, is dit je tekening in tekst.
 
-```{.verilog include="tta_hw/t8_board.v"}
+```{.verilog include="06_richting_hardware/t8_op_74hc_print/t8_board.v"}
 ```
 
 ### Wie is wie op het bord?
@@ -170,17 +170,17 @@ Alle drie volgden uit de manier van testen: het gedragsmodel is de specificatie,
 
 `pair_hw` zet één bord naast één gedragsmodel uit week 19 met hetzelfde programma. Na elke klokcyclus vergelijkt het de volledige toestand: PC, R0 tot en met R3, OP, MAR, RES, de vlaggen, de uitvoer en de halt-vlag. Het controleert ook dat er nooit een X (conflict) op de bus staat.
 
-```{.verilog include="tta_hw/pair_hw.v"}
+```{.verilog include="06_richting_hardware/t8_op_74hc_print/pair_hw.v"}
 ```
 
 Eerst de acht programma's uit week 19:
 
-```{.verilog include="tta_hw/tb_t8_board.v"}
+```{.verilog include="06_richting_hardware/t8_op_74hc_print/tb_t8_board.v"}
 ```
 
 Dan 300 willekeurige programma's, met alle guards, bronnen en bestemmingen, cyclus voor cyclus vergeleken:
 
-```{.verilog include="tta_hw/tb_t8_board_random.v"}
+```{.verilog include="06_richting_hardware/t8_op_74hc_print/tb_t8_board_random.v"}
 ```
 
 Beide slagen.
@@ -189,7 +189,7 @@ Beide slagen.
 
 Een logisch correct ontwerp kan toch niet werken als de klok te snel is. Het bord is onder verschillende omstandigheden gesimuleerd. Het script `sweep.py` doet dit na.
 
-```{.python include="tta_hw/sweep.py"}
+```{.python include="06_richting_hardware/t8_op_74hc_print/sweep.py"}
 ```
 
 De resultaten (voor alle 300 willekeurige programma's):
@@ -218,7 +218,7 @@ Deze simulatie is zo goed als haar modellen. Echte chips hebben minimale en maxi
 
 Het script telt de chips direct uit het schema, zodat de lijst nooit afwijkt van het ontwerp:
 
-```{.python include="tta_hw/bom.py"}
+```{.python include="06_richting_hardware/t8_op_74hc_print/bom.py"}
 ```
 
 De uitvoer:
@@ -265,10 +265,10 @@ De prijsindicatie van het script (ruwweg €50 voor de chips, €15 voor de voet
 
 Een EEPROM-programmer heeft een binair bestand nodig. Het ROM van de T8 is 24 bit breed en bestaat uit drie 8-bit chips. Dit script splitst het hex-bestand van de assembler in drie bestanden van 256 bytes:
 
-```{.python include="tta_hw/split_rom.py"}
+```{.python include="06_richting_hardware/t8_op_74hc_print/split_rom.py"}
 ```
 
-```{.python include="tta_hw/test_split_rom.py"}
+```{.python include="06_richting_hardware/t8_op_74hc_print/test_split_rom.py"}
 ```
 
 ```text

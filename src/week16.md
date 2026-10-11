@@ -18,7 +18,7 @@ title: "Week 16 · Je eerste CPU draait: verificatie en prestaties"
 
 Je hebt alle onderdelen: ALU, datapath, besturing en geheugens. Samen vormen ze de CPU. Deze week maken we dat hard. We draaien er programma's op, controleren of de uitkomst klopt en bewijzen zo goed mogelijk dat hij altijd klopt.
 
-Controleer dat je map `labs/cpu/` deze bestanden bevat: `alu.v`, `idecode.v`, `memories.v`, `datapath.v`, `control.v`, `cpu.v` en `asm_funcs.vh`.
+Controleer dat je map `labs/04_een_cpu/w8_cpu/` deze bestanden bevat: `alu.v`, `idecode.v`, `memories.v`, `datapath.v`, `control.v`, `cpu.v` en `asm_funcs.vh`.
 
 ## 2. Gerichte programma's
 
@@ -30,13 +30,13 @@ In week 13 hadden we een mini-assembler in Verilog-functies (`I_LDI`, `I_ALU`, .
 4. Voorwaarden: een vergelijking met teken (`BLT`) en een zonder teken (`BCS`). Met R1 = 253 is dat zonder teken groter dan 5 en met teken kleiner dan 5. Beide takken moeten kloppen.
 5. Geheugen en ALU: `ST` en `LD` met een offset, plus alle bitoperaties.
 
-```{.verilog include="cpu/tb_programs.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_programs.v"}
 ```
 
 Draai:
 
 ```text
-cd labs/cpu
+cd labs/04_een_cpu/w8_cpu
 iverilog -g2012 -o prog.vvp tb_programs.v alu.v idecode.v memories.v datapath.v control.v cpu.v
 vvp prog.vvp
 ```
@@ -47,7 +47,7 @@ Je ziet PASS. Je CPU draait programma's.
 
 Als iets niet werkt, wil je zien wat de CPU doet. Een trace schrijft bij elke uitgevoerde instructie een regel: waar de PC stond, welke instructie het was en de toestand van de registers en vlaggen. In Verilog lees je interne signalen rechtstreeks met een hiërarchische naam (`dut.dp.ir`, `dut.ctl.t`).
 
-```{.verilog include="cpu/tb_trace.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_trace.v"}
 ```
 
 Een deel van de uitvoer:
@@ -73,7 +73,7 @@ Het referentiemodel is een eenvoudig programma dat de W8-ISA uitvoert zoals de s
 
 De testbench maakt 300 keer een willekeurig programma van 40 tot 200 instructies met alle soorten: ALU-instructies, `LDI`, `ADDI`, `LD`, `ST`, `CMP`, `CMPI`, voorwaardelijke sprongen en `CALL`. Sprongen gaan altijd vooruit (maximaal drie instructies), zodat elk programma gegarandeerd eindigt. Het geheugen begint met willekeurige inhoud. Na afloop vergelijken we de acht registers, de vier vlaggen, alle 256 bytes van het datageheugen en het aantal klokcycli (precies 2 per instructie).
 
-```{.verilog include="cpu/tb_random.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_random.v"}
 ```
 
 Draai:

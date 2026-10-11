@@ -87,7 +87,7 @@ De W8-besturing is een klein controlegeheugen. In Verilog schrijven we het als e
 
 ## 4. De besturingseenheid in Verilog
 
-```{.verilog include="cpu/control.v"}
+```{.verilog include="04_een_cpu/w8_cpu/control.v"}
 ```
 
 Lees het rustig door. De localparams `F_...` geven elke bit een naam, dus een controlewoord als `F_REG_WE | F_WB_IMM` leest als gewoon Nederlands. De `case` is het controlegeheugen: het ontwerp van de CPU staat in die tien regels. `cond_ok` evalueert de acht voorwaarden uit de tabel van week 13 tegen de vlaggen. In `pc_load = cw[1] & (~cw[11] | cond_ok)` gaat een sprong door als hij onvoorwaardelijk is (`cw[11] = 0`) of als de voorwaarde klopt. En `halt_r` zorgt dat de toestandsmachine na `HALT` stopt en het controlewoord 0 wordt, zodat er niets meer verandert.
@@ -98,7 +98,7 @@ Lees het rustig door. De localparams `F_...` geven elke bit een naam, dus een co
 
 Het toplevel verbindt datapath, besturing en geheugens:
 
-```{.verilog include="cpu/cpu.v"}
+```{.verilog include="04_een_cpu/w8_cpu/cpu.v"}
 ```
 
 Dit is de hele machine. Er zijn vijf modules: `alu`, `idecode`, `datapath`, `control` en de geheugens `imem` en `dmem`. De ingewikkelde dingen zitten in de details van elk onderdeel, het geheel is overzichtelijk.
@@ -107,13 +107,13 @@ Dit is de hele machine. Er zijn vijf modules: `alu`, `idecode`, `datapath`, `con
 
 De testbench controleert voor elke opcode de uitvoerstap tegen de tabel van paragraaf 2, de ophaalstap voor alle opcodes, alle 128 combinaties van voorwaarde en vlaggen en het gedrag van `HALT`.
 
-```{.verilog include="cpu/tb_control.v"}
+```{.verilog include="04_een_cpu/w8_cpu/tb_control.v"}
 ```
 
 Draai:
 
 ```text
-cd labs/cpu
+cd labs/04_een_cpu/w8_cpu
 iverilog -g2012 -o ctl.vvp tb_control.v control.v
 vvp ctl.vvp
 ```

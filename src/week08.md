@@ -57,12 +57,12 @@ Een geheugen reageert niet direct. Na een adresverandering duurt het even voorda
 
 ## 2. Geheugen in Verilog
 
-```{.verilog include="week08/memory.v"}
+```{.verilog include="02_geheugen_en_tijd/week_08/memory.v"}
 ```
 
 `reg [7:0] mem [0:255]` is een array van 256 registers van 8 bits. In een FPGA wordt dit automatisch omgezet in ingebouwd blok-RAM. `$readmemh` laadt een hex-bestand met één waarde per woord en `//` voor commentaar.
 
-```{.text include="week08/prog.hex"}
+```{.text include="02_geheugen_en_tijd/week_08/prog.hex"}
 ```
 
 ## 3. Het registerbestand
@@ -80,7 +80,7 @@ Een CPU heeft in de chip zelf een klein, supersnel geheugen: de registers (R0...
 
 Wij houden register 0 hier niet vast op nul. Sommige ontwerpen doen dat wel (RISC-V bijvoorbeeld), en dat bekijken we in week 13.
 
-```{.verilog include="week08/regfile.v"}
+```{.verilog include="02_geheugen_en_tijd/week_08/regfile.v"}
 ```
 
 ## 4. De bus
@@ -120,23 +120,23 @@ Stuurt niemand de bus aan, dan zweeft hij (Z). Dat is geen conflict, maar de lez
 
 ## 5. Bus in Verilog
 
-```{.verilog include="week08/bus.v"}
+```{.verilog include="02_geheugen_en_tijd/week_08/bus.v"}
 ```
 
 Meerdere `assign`-regels op dezelfde `wire` zijn toegestaan: de simulator lost ze op. Z gecombineerd met een waarde geeft die waarde, en twee verschillende waarden geven X (conflict).
 
 ## 6. Tests
 
-```{.verilog include="week08/tb_mem.v"}
+```{.verilog include="02_geheugen_en_tijd/week_08/tb_mem.v"}
 ```
 
-```{.verilog include="week08/tb_regfile_bus.v"}
+```{.verilog include="02_geheugen_en_tijd/week_08/tb_regfile_bus.v"}
 ```
 
 Draai ze:
 
 ```text
-cd labs/week08
+cd labs/02_geheugen_en_tijd/week_08
 iverilog -g2012 -o a.vvp tb_mem.v memory.v && vvp a.vvp
 iverilog -g2012 -o b.vvp tb_regfile_bus.v regfile.v bus.v && vvp b.vvp
 ```

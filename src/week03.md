@@ -189,26 +189,26 @@ Het resultaat is f = A + BD + BC. Zonder don't cares had je veel meer termen nod
 
 Een goede ontwerper vertrouwt zijn eigen rekenwerk niet blind. We schrijven de functie uit het voorbeeld twee keer: één keer als som van alle minterms en één keer vereenvoudigd. De testbench vergelijkt ze voor alle 16 invoeren.
 
-```{.verilog include="week03/fn_sop.v"}
+```{.verilog include="01_elektronica_en_logica/week_03/fn_sop.v"}
 ```
 
-```{.verilog include="week03/tb_fn.v"}
+```{.verilog include="01_elektronica_en_logica/week_03/tb_fn.v"}
 ```
 
 Dit heet exhaustieve verificatie. Bij 4 ingangen controleer je 16 gevallen, bij 16 ingangen 65 536 (nog steeds snel) en bij 64 ingangen gaat het niet meer. Dan heb je slimmere methoden nodig, maar het idee blijft hetzelfde.
 
 ### De BCD-schakeling met don't cares, en De Morgan
 
-```{.verilog include="week03/bcd_ge5.v"}
+```{.verilog include="01_elektronica_en_logica/week_03/bcd_ge5.v"}
 ```
 
-```{.verilog include="week03/tb_bcd.v"}
+```{.verilog include="01_elektronica_en_logica/week_03/tb_bcd.v"}
 ```
 
 Draai de labs:
 
 ```text
-cd labs/week03
+cd labs/01_elektronica_en_logica/week_03
 iverilog -g2012 -o a.vvp tb_fn.v fn_sop.v && vvp a.vvp
 iverilog -g2012 -o b.vvp tb_bcd.v bcd_ge5.v && vvp b.vvp
 ```
