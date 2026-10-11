@@ -22,7 +22,7 @@ Daarna volgt een vervolgproject van vier weken (fase 7, week 27 tot 30): een kle
 
 - De cursus duurt 26 weken (fase 7 voegt er nog vier toe), met ongeveer 10 tot 12 uur per week (ruim 300 uur in totaal). Heb je minder tijd, rek het dan uit tot negen maanden. Dat is geen schande.
 - Elke week is een hoofdstuk met doelen, theorie, uitgewerkte voorbeelden, een lab, oefeningen en een zelftest. De antwoorden staan achteraan in het boek, de lange listings in het codeboek.
-- Elk lab bevat werkende Verilog-code die met Icarus Verilog is getest. De bestanden staan ook in de map `labs/weekNN/`.
+- Elk lab bevat werkende Verilog-code die met Icarus Verilog is getest. De bestanden staan ook in de map `labs/<fase>/week_NN/` (zie `labs/README.md`).
 - De cursus leert door te bouwen. Lees de theorie en bouw dan meteen het lab. Snap je iets niet, bouw het dan eerst en lees daarna opnieuw.
 - Typ de code over in plaats van te kopiëren. Je vingers leren sneller dan je ogen.
 
@@ -125,18 +125,16 @@ Prijzen zijn schattingen en kunnen verschillen. Controleer actuele prijzen en de
 ```
 cpu-design-cursus/
 ├── pdf/              ← het boek (scherm en print) en het codeboek
-├── src/              ← de tekst van elk hoofdstuk (Markdown)
+├── src/              ← de tekst: per fase een map met de hoofdstukken (Markdown)
 ├── boek/             ← de opmaak van het boek
-├── labs/             ← de werkende code, per week of per project
-│   ├── week01 ... week12     (fase 1 t/m 3)
-│   ├── cpu/                  (weken 13-17: W8, assembler)
-│   ├── stack/                (week 18: S8 en Forth)
-│   ├── tta/                  (week 19: T8)
-│   ├── cpu_pipe, memhier     (weken 20-21)
-│   ├── cpu_irq, cpu_fpga     (weken 22-24: I/O, FPGA)
-│   ├── beeld, beeld_fpga     (weken 27-30: beeldcomputer, SD-kaart)
-│   ├── tta_hw                (week 25: 74HC-bord)
-│   └── tt_t8                 (week 26: chip)
+├── labs/             ← de werkende code, dezelfde fasemappen als src/
+│   ├── 01 t/m 03             week_01 ... week_12
+│   ├── 04_een_cpu            w8_cpu (weken 13-17: W8, assembler)
+│   ├── 05_andere_architecturen
+│   │                         s8_stackmachine_forth, t8_transport_triggered,
+│   │                         w8_pipeline, w8_caches_en_voorspelling, w8_interrupts_en_io
+│   ├── 06_richting_hardware  w8_op_fpga, t8_op_74hc_print, t8_naar_silicium
+│   └── 07_de_beeldcomputer   beeldcomputer, beeldcomputer_op_fpga
 ├── test_labs.py      ← draait alle tests
 └── build.py          ← bouwt het boek opnieuw
 ```

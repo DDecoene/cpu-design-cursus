@@ -27,8 +27,8 @@ De bijlagen bevatten een Verilog-spiekbrief, de instructiesets, een chiplijst, f
 
 | Map of bestand | Inhoud |
 |----------------|--------|
-| `src/` | de tekst van alle hoofdstukken (Markdown) |
-| `labs/` | alle code, per week of per project; het boek neemt zijn listings hieruit over |
+| `src/` | de tekst van alle hoofdstukken (Markdown), per fase een map |
+| `labs/` | alle code, per fase en dan per week of project (zie `labs/README.md`); het boek neemt zijn listings hieruit over |
 | `boek/` | de opmaak van het boek: Typst-sjabloon, pandoc-filter, kleuring en letters |
 | `test_labs.py` | draait alle tests |
 | `build.py` | bouwt het boek |
@@ -58,7 +58,8 @@ Je hebt [Icarus Verilog](https://steveicarus.github.io/iverilog/) en Python 3 no
 
 ```text
 python3 test_labs.py            # alle tests (74)
-python3 test_labs.py 04 cpu     # alleen labs/01_elektronica_en_logica/week_04 en labs/04_een_cpu/w8_cpu
+python3 test_labs.py week_04 w8_cpu    # alleen week 4 en de W8-CPU
+python3 test_labs.py 04_een_cpu        # alle labs van een fase
 ```
 
 ## Het boek bouwen
@@ -81,7 +82,7 @@ Code staat nooit in de tekst zelf. Een hoofdstuk verwijst naar een bestand in `l
 ```
 ````
 
-Zo is de code in het boek altijd dezelfde als de geteste code. Langer dan 40 regels gaat naar het codeboek. Met de klasse `.volledig` blijft een lange listing toch in de tekst. Met `van=12 tot=30` toon je alleen die regels in de tekst; het hele bestand komt dan in het codeboek.
+Zo is de code in het boek altijd dezelfde als de geteste code. Het pad in het bijschrift is het pad in `labs/`. Langer dan 40 regels gaat naar het codeboek. Met de klasse `.volledig` blijft een lange listing toch in de tekst. Met `van=12 tot=30` toon je alleen die regels in de tekst; het hele bestand komt dan in het codeboek.
 
 ## Stand van zaken
 
