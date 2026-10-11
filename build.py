@@ -4,6 +4,7 @@
   pdf/cpu-design-cursus.pdf                 voor het scherm: alles in één bestand, klikbaar
   pdf/cpu-design-cursus-print.pdf           om af te drukken (recto-verso, rugmarge): tekst en antwoorden
   pdf/cpu-design-cursus-codeboek-print.pdf  om af te drukken: de lange listings, als tweede map
+  build/site/                               de webcursus (GitHub Pages): ./build.py site, alleen pandoc nodig
 
 Nodig: pandoc (3.1 of nieuwer) en typst (0.15). Gebruik:
   ./build.py              alle drie
@@ -80,7 +81,27 @@ def hoofdbestand(weken, fase_info, met_boek=True, met_codeboek=True, titel_sub=N
     return "\n".join(r) + "\n"
 
 
+def git_versie():
+    return subprocess.run(["git", "describe", "--tags", "--always", "--dirty"], cwd=root,
+                          capture_output=True, text=True).stdout.strip() or "ontwikkelversie"
+
+
+def website():
+    """Bouwt de webcursus in build/site/ (zie web/bouw.py)."""
+    if not shutil.which(PANDOC):
+        sys.exit(f"{PANDOC} niet gevonden (zie README: De PDF's bouwen)")
+    sys.path.insert(0, str(root / "web"))
+    import bouw
+    weken, paden = hoofdstukken()
+    problemen = bouw.bouw_site(weken, paden, fasen(), root / "build" / "site", git_versie())
+    if problemen:
+        sys.exit("De site heeft problemen:\n  " + "\n  ".join(problemen))
+    print("ok  build/site/index.html")
+
+
 def main():
+    if sys.argv[1:] == ["site"]:
+        return website()
     welke = sys.argv[1:] or ["scherm", "print", "codeboek"]
     for prog in (PANDOC, TYPST):
         if not shutil.which(prog):
@@ -97,8 +118,7 @@ def main():
     for nr, w in weken.items():
         pandoc(paden[nr], sleutel=f"week{nr:02d}", soort="week", nr=nr, fase=w["fase"])
 
-    versie = subprocess.run(["git", "describe", "--tags", "--always", "--dirty"], cwd=root,
-                            capture_output=True, text=True).stdout.strip() or "ontwikkelversie"
+    versie = git_versie()
     uitgaven = {
         "scherm": ("main-scherm.typ", hoofdbestand(weken, fase_info), "scherm", "cpu-design-cursus.pdf"),
         "print": ("main-print.typ", hoofdbestand(weken, fase_info, met_codeboek=False), "print",
