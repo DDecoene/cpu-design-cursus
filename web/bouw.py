@@ -53,13 +53,29 @@ def zijbalk(weken, fase_info, huidig, basis):
     for fase, info in sorted(fase_info.items()):
         nrs = weken_van_fase(weken, fase)
         open_ = " open" if huidig in nrs else ""
-        r.append(f'<details class="fase"{open_}><summary>Fase {fase} · {esc(info["titel"])}</summary><ul>')
+        r.append(f'<details class="fase" data-fase="{fase}"{open_}><summary>Fase {fase} · {esc(info["titel"])}</summary><ul>')
         for n in nrs:
             cur = ' aria-current="page"' if n == huidig else ""
             r.append(f'<li><a href="{basis}week/{n:02d}/" data-week="{n}"{cur}>'
                      f'<span class="vink" aria-hidden="true"></span>Week {n}: {esc(weken[n]["titel"])}</a></li>')
         r.append("</ul></details>")
     r.append(top("bijlagen", "bijlagen/", "Bijlagen"))
+    return "\n".join(r)
+
+
+def fase_van(huidig, weken):
+    """De fase van een weekpagina (voor de kleur), anders een lege tekst."""
+    return str(weken[huidig]["fase"]) if isinstance(huidig, int) else ""
+
+
+def route(weken, fase_info, basis):
+    """De 'metrolijn' op de startpagina: een station per fase, met een link naar zijn eerste week."""
+    r = ['<nav class="route" aria-label="De zeven fasen"><ol>']
+    for fase, info in sorted(fase_info.items()):
+        eerste = weken_van_fase(weken, fase)[0]
+        r.append(f'<li class="station" data-fase="{fase}"><a href="{basis}week/{eerste:02d}/">'
+                 f'<i>{fase}</i><span>{esc(info["titel"])}</span></a></li>')
+    r.append("</ol></nav>")
     return "\n".join(r)
 
 
@@ -121,7 +137,7 @@ def bouw_site(weken, paden, fase_info, uit, versie):
     if uit.exists():
         shutil.rmtree(uit)
     uit.mkdir(parents=True)
-    for m in ("css", "js"):
+    for m in ("css", "js", "fonts"):
         shutil.copytree(WEB / m, uit / m)
     maxweek = max(weken)
     sjabloon = string.Template((WEB / "sjabloon.html").read_text())
@@ -139,7 +155,8 @@ def bouw_site(weken, paden, fase_info, uit, versie):
         p = lees(inhoud)
         titel = p.kopjes[0][2] if p.kopjes else "CPU Design Cursus"
         pagina = sjabloon.substitute(
-            titel=esc(titel if huidig == "start" else f"{titel} · CPU Design Cursus"), basis=basis,
+            titel="CPU Design Cursus: van nul tot chipbouwer" if huidig == "start" else esc(f"{titel} · CPU Design Cursus"),
+            basis=basis, fase=fase_van(huidig, weken),
             zijbalk=zijbalk(weken, fase_info, huidig, basis), inhoud=inhoud,
             onderaan=onderaan.replace("@BASIS@", basis), toc=toc(p), versie=esc(versie), cursus=cursus)
         doel = uit / rel
@@ -153,7 +170,7 @@ def bouw_site(weken, paden, fase_info, uit, versie):
     meta = dict(maxweek=maxweek)
     start = pandoc_html(WEB / "start.md", soort="start", **meta)
     schrijf("index.html", 0, "start",
-            start + fasekaarten(weken, fase_info, "@BASIS@") + downloads() + VOORTGANG + OPSLAGMELDING, in_zoek=False)
+            start + route(weken, fase_info, "@BASIS@") + fasekaarten(weken, fase_info, "@BASIS@") + downloads() + VOORTGANG + OPSLAGMELDING, in_zoek=False)
     schrijf("syllabus/index.html", 1, "syllabus", pandoc_html(ROOT / "src/00_voorwerk/syllabus.md", soort="voor", **meta))
     schrijf("bijlagen/index.html", 1, "bijlagen", pandoc_html(ROOT / "src/99_bijlagen/bijlagen.md", soort="bijlagen", **meta))
     for n in nrs:
@@ -169,6 +186,8 @@ def controleer(uit, verwacht):
     paginas = {p.relative_to(uit).as_posix(): lees(p.read_text()) for p in uit.rglob("index.html")}
     problemen = [f"ontbrekende pagina: {v}" for v in sorted(set(verwacht) - set(paginas))]
     for naam, p in sorted(paginas.items()):
+        if p.geneste_links:
+            problemen.append(f"{naam}: een link binnen een link")
         for href in p.links:
             if re.match(r"^(https?:|mailto:)", href):
                 continue

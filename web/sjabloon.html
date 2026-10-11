@@ -13,11 +13,11 @@ try { var t = JSON.parse(localStorage.getItem("cpu-cursus-v1")).thema; if (t ===
 <link rel="stylesheet" href="${basis}css/site.css">
 <script type="module" src="${basis}js/app.js"></script>
 </head>
-<body data-basis="$basis">
+<body data-basis="$basis" data-fase="$fase">
 <a class="sla-over" href="#inhoud">Ga naar de inhoud</a>
 <header class="kop">
   <button id="menuknop" type="button" aria-expanded="false" aria-controls="zijbalk">Menu</button>
-  <a class="merk" href="${basis}">CPU Design Cursus</a>
+  <a class="merk" href="${basis}"><span class="logo" aria-hidden="true"></span>CPU Design Cursus</a>
   <div class="zoek">
     <input id="zoekvak" type="search" placeholder="Zoeken…" aria-label="Zoeken in de cursus" autocomplete="off">
     <ul id="zoekresultaten" hidden></ul>

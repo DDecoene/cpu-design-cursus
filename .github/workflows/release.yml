@@ -57,8 +57,12 @@ jobs:
     # Bouwt de webcursus en test de site; de bouw faalt bij een kapotte interne link.
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # git describe heeft de tags nodig voor het versienummer in de voet
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -82,6 +86,9 @@ jobs:
     needs: site
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false   # twee snelle pushes publiceren in de juiste volgorde
     permissions:
       pages: write
       id-token: write

@@ -26,6 +26,18 @@ class PaginaTest(unittest.TestCase):
                                      {"id": "b", "kop": "Deel", "tekst": "Tekst & meer"}])
 
 
+class GenesteLinksTest(unittest.TestCase):
+    def test_pagina_telt_links_in_links(self):
+        self.assertEqual(lees('<a href="a">x <a href="b">y</a></a>').geneste_links, 1)
+        self.assertEqual(lees('<a href="a">x</a> <a href="b">y</a>').geneste_links, 0)
+
+    def test_controleer_meldt_een_geneste_link(self):
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        (tmp / "index.html").write_text('<a href="#t">tekst <a href="#t">week 1</a></a><h1 id="t">t</h1>')
+        self.assertEqual(bouw.controleer(tmp, ["index.html"]), ["index.html: een link binnen een link"])
+
+
 class ControleerTest(unittest.TestCase):
     def site(self, paginas):
         tmp = pathlib.Path(tempfile.mkdtemp())
@@ -56,6 +68,28 @@ class ControleerTest(unittest.TestCase):
         p = bouw.controleer(tmp, [])
         self.assertEqual(len(p), 3)
         self.assertTrue(any("week/09/" in x for x in p))
+
+
+WEKEN = {1: {"titel": "Poorten", "fase": 1}, 2: {"titel": "Opteller", "fase": 1}, 3: {"titel": "Latches", "fase": 2}}
+FASEN = {1: {"titel": "Logica", "resultaat": "Je bouwt een opteller"}, 2: {"titel": "Geheugen", "resultaat": "Je bouwt een register"}}
+
+
+class OpmaakTest(unittest.TestCase):
+    def test_route_heeft_een_station_per_fase_met_link_naar_de_eerste_week(self):
+        h = bouw.route(WEKEN, FASEN, "../")
+        self.assertEqual(h.count('class="station"'), 2)
+        self.assertIn('<li class="station" data-fase="1"><a href="../week/01/">', h)
+        self.assertIn('<li class="station" data-fase="2"><a href="../week/03/">', h)
+        self.assertIn("Logica", h)
+
+    def test_zijbalk_geeft_elke_fase_zijn_kleur(self):
+        h = bouw.zijbalk(WEKEN, FASEN, 3, "../../")
+        self.assertIn('<details class="fase" data-fase="1">', h)
+        self.assertIn('<details class="fase" data-fase="2" open>', h)
+
+    def test_fase_van_een_pagina(self):
+        self.assertEqual(bouw.fase_van(3, WEKEN), "2")
+        self.assertEqual(bouw.fase_van("syllabus", WEKEN), "")
 
 
 class PdfNamenTest(unittest.TestCase):
@@ -90,7 +124,7 @@ class FilterTest(unittest.TestCase):
 
 ## 1. Deel
 
-Zie week 2, week 31 en `week 4`.
+Zie week 2, week 31, (week 1) en `week 4`.
 
 ```{{.verilog include="{kort}"}}
 ```
@@ -113,10 +147,12 @@ Zie week 2, week 31 en `week 4`.
 Antwoorden: (1) ja
 """)
         h = bouw.pandoc_html(f, soort="week", nr=3, maxweek=30)
-        self.assertIn('<h1 id="week-3-proef">Week 3: Proef</h1>', h)   # kop wordt geen link
+        self.assertIn('<span class="badge" aria-hidden="true">3</span>', h)
+        self.assertIn('<h1 id="week-3-proef"><span class="weeklabel">Week 3:</span> Proef</h1>', h)   # kop wordt geen link
         self.assertIn('<div class="subtitel">', h)
         self.assertIn('<div class="doelen">', h)
         self.assertIn('<a href="@BASIS@week/02/">week 2</a>', h)
+        self.assertIn('(<a href="@BASIS@week/01/">week 1</a>)', h)     # ook met een leesteken ervoor
         self.assertNotIn("week/31", h)                                 # buiten bereik
         self.assertNotIn("week/04", h)                                 # in code
         self.assertEqual(h.count('class="listing"'), 2)

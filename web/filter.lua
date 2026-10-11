@@ -58,7 +58,6 @@ local function verwerk(blocks)
   local subtitel = nil
   local i = 1
   local sectie = nil
-  local h1_index = nil
   while i <= #blocks do
     local b = blocks[i]
     if b.t == "RawBlock" and b.format == "html" and b.text:match('class="subtitle"') then
@@ -69,13 +68,28 @@ local function verwerk(blocks)
       if blocks[i + 1] and blocks[i + 1].t == "RawBlock" and blocks[i + 1].text:match("^</p>") then i = i + 1 end
     elseif b.t == "HorizontalRule" then
       -- streep voor het slotkader: op het web overbodig
-    elseif b.t == "Header" and b.level == 1 then
+    elseif b.t == "Header" and b.level == 1 and soort == "week" and weeknr then
+      -- "Week 14: Het datapath": het nummer komt in een gekleurd blok, "Week 14:" blijft voor schermlezers en zoeken
+      local inl = b.content
+      local i = 1
+      while i <= #inl and not (inl[i].t == "Str" and inl[i].text:match(":$")) do i = i + 1 end
+      if inl[1] and inl[1].t == "Str" and inl[1].text == "Week" and i <= #inl then
+        local nieuw = pandoc.List({ pandoc.RawInline("html", '<span class="weeklabel">') })
+        for j = 1, i do nieuw:insert(inl[j]) end
+        nieuw:insert(pandoc.RawInline("html", "</span>"))
+        for j = i + 1, #inl do nieuw:insert(inl[j]) end
+        b = pandoc.Header(1, nieuw, b.attr)
+      end
+      uit:insert(html('<div class="weekkop"><span class="badge" aria-hidden="true">' .. weeknr ..
+        '</span><div class="titelblok">'))
       uit:insert(b)
-      if subtitel and soort == "week" then
+      if subtitel then
         uit:insert(pandoc.Div({ pandoc.Plain(subtitel) }, pandoc.Attr("", { "subtitel" })))
         subtitel = nil
       end
-      h1_index = #uit
+      uit:insert(html("</div></div>"))
+    elseif b.t == "Header" and b.level == 1 then
+      uit:insert(b)
     elseif b.t == "Header" and b.level == 2 then
       sectie = pandoc.utils.stringify(strip_nummer(b.content))
       uit:insert(b)
@@ -126,13 +140,14 @@ local links = {
     local uit, i, gewijzigd = pandoc.List(), 1, false
     while i <= #inl do
       local a, sp, c = inl[i], inl[i + 1], inl[i + 2]
-      local nr, rest = nil, nil
-      if a.t == "Str" and (a.text == "week" or a.text == "Week") and sp and sp.t == "Space"
-         and c and c.t == "Str" then
-        nr, rest = c.text:match("^(%d+)(.*)$")
+      local nr, rest, voor, wk = nil, nil, nil, nil
+      if a.t == "Str" and sp and sp.t == "Space" and c and c.t == "Str" then
+        voor, wk = a.text:match("^(%p*)([Ww]eek)$")   -- ook "(week 12)"
+        if wk then nr, rest = c.text:match("^(%d+)(.*)$") end
       end
       if nr and tonumber(nr) >= 1 and tonumber(nr) <= maxweek then
-        uit:insert(pandoc.Link({ a, sp, pandoc.Str(nr) }, string.format("@BASIS@week/%02d/", tonumber(nr))))
+        if voor ~= "" then uit:insert(pandoc.Str(voor)) end
+        uit:insert(pandoc.Link({ pandoc.Str(wk), sp, pandoc.Str(nr) }, string.format("@BASIS@week/%02d/", tonumber(nr))))
         if rest ~= "" then uit:insert(pandoc.Str(rest)) end
         i = i + 3
         gewijzigd = true

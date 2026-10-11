@@ -42,6 +42,12 @@ function toonVoortgang() {
     kaart.querySelector("progress").value = klaar;
     kaart.querySelector(".fase-tekst").textContent = `${klaar} van ${totaal} weken`;
   }
+  for (const station of document.querySelectorAll(".station")) {
+    const fase = cursus.fasen.find((f) => f.nr === Number(station.dataset.fase));
+    const { klaar, totaal } = voortgang(staat, fase.weken);
+    station.querySelector("i").style.setProperty("--p", String(Math.round((100 * klaar) / totaal)));
+    station.dataset.status = klaar === totaal ? "klaar" : klaar > 0 ? "bezig" : "nog";
+  }
   const verder = $("verder");
   if (verder && staat.laatst) {
     verder.href = `${basis}week/${String(staat.laatst).padStart(2, "0")}/`;

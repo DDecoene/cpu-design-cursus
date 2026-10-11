@@ -13,20 +13,27 @@ class Pagina(HTMLParser):
         self.secties = []   # {"id", "kop", "tekst"}: de tekst onder elk kopje
         self._kop = None    # (niveau, id, [tekststukken]) zolang we in een kop zitten
         self._code = 0
+        self.geneste_links = 0   # <a> binnen een <a>: een browser splitst die en de tekst valt uit de link
+        self._in_a = False
         self._sectie = {"id": "", "kop": "", "tekst": []}
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if "id" in a:
             self.ids.add(a["id"])
-        if tag == "a" and "href" in a:
-            self.links.append(a["href"])
+        if tag == "a":
+            self.geneste_links += self._in_a
+            self._in_a = True
+            if "href" in a:
+                self.links.append(a["href"])
         if tag == "pre":
             self._code += 1
         if tag in KOPPEN:
             self._kop = (int(tag[1]), a.get("id", ""), [])
 
     def handle_endtag(self, tag):
+        if tag == "a":
+            self._in_a = False
         if tag == "pre":
             self._code -= 1
         if tag in KOPPEN and self._kop:
