@@ -1,5 +1,9 @@
 # CPU Design Cursus: van nul tot chipbouwer
 
+> ### 👉 [Lees de cursus online: ddecoene.github.io/cpu-design-cursus](https://ddecoene.github.io/cpu-design-cursus/)
+>
+> Elke week is een pagina, met zoeken en een voortgang die je zelf bijhoudt in je browser. Liever offline lezen of afdrukken? De PDF's staan bij de [Releases](../../releases).
+
 Een Nederlandstalige zelfstudiecursus over digitale elektronica en CPU-ontwerp, verdeeld over 26 weken, plus een vervolgproject van vier weken.
 De stof loopt van spanning, stroom en weerstand via logische poorten en Verilog naar een eigen 8-bit CPU,
 een stackmachine, een transport-triggered architecture, pipelining, caches en interrupts. De laatste weken
