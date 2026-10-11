@@ -1,5 +1,5 @@
 // Verbindt de pagina met opslag.js en zoek.js. Alles is optioneel: zonder JS blijft de cursus leesbaar.
-import { THEMAS, maakOpslag, zetGedaan, zetLaatst, voortgang, exporteer, importeer } from "./opslag.js";
+import { SLEUTEL, THEMAS, maakOpslag, zetGedaan, zetLaatst, voortgang, exporteer, importeer } from "./opslag.js";
 import { bouwIndex, zoek } from "./zoek.js";
 
 const $ = (id) => document.getElementById(id);
@@ -17,6 +17,11 @@ let staat = opslag.lees();
 function bewaar() {
   opslag.schrijf(staat);
   if (!opslag.werkt && $("opslagmelding")) $("opslagmelding").hidden = false;
+}
+
+// een ander tabblad kan de voortgang veranderd hebben: lees opnieuw vóór elke wijziging en bij een storage-event
+function ververs() {
+  if (opslag.werkt) staat = opslag.lees();
 }
 
 function toonThema() {
@@ -52,6 +57,7 @@ function toonVoortgang() {
 
 toonThema();
 $("themaknop").addEventListener("click", () => {
+  ververs();
   staat = { ...staat, thema: THEMAS[(THEMAS.indexOf(staat.thema) + 1) % THEMAS.length] };
   bewaar();
   toonThema();
@@ -63,12 +69,20 @@ if (afvinken) {
   staat = zetLaatst(staat, week);
   bewaar();
   afvinken.addEventListener("click", () => {
+    ververs();
     staat = zetGedaan(staat, week, !staat.gedaan.includes(week));
     bewaar();
     toonVoortgang();
   });
 }
 toonVoortgang();
+
+window.addEventListener("storage", (e) => {
+  if (e.key !== null && e.key !== SLEUTEL) return;
+  ververs();
+  toonThema();
+  toonVoortgang();
+});
 
 if ($("export")) {
   $("export").addEventListener("click", () => {

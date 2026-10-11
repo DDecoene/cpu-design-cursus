@@ -75,8 +75,8 @@ export function importeer(tekst, maxWeek) {
   } catch {
     return { ok: false, fout: "Dit is geen geldig JSON-bestand." };
   }
-  const bekend = obj && typeof obj === "object" && ["gedaan", "laatst", "thema"].some((k) => k in obj);
-  const staat = bekend ? valideer(obj, maxWeek) : null;
+  // alleen bestanden uit exporteer(): een ander JSON-bestand met een veld "thema" mag je voortgang niet wissen
+  const staat = obj && obj.formaat === SLEUTEL ? valideer(obj, maxWeek) : null;
   if (!staat) return { ok: false, fout: "Dit bestand bevat geen voortgang van deze cursus." };
   return { ok: true, staat };
 }

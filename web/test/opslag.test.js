@@ -59,3 +59,9 @@ test("export en import samen; vreemde bestanden worden geweigerd", () => {
   assert.deepEqual(importeer(exporteer(s), 30), { ok: true, staat: s });
   for (const tekst of ["geen json", "{}", "[]", "null", "42", '{"naam":"x"}']) assert.equal(importeer(tekst, 30).ok, false, tekst);
 });
+
+test("import weigert bestanden die niet door exporteer zijn gemaakt, ook als een bekend veld erin zit", () => {
+  for (const tekst of ['{"thema":"dark"}', '{"gedaan":"1,2,3"}', '{"laatst":null}', '{"gedaan":[1,2]}']) {
+    assert.equal(importeer(tekst, 30).ok, false, tekst);
+  }
+});
